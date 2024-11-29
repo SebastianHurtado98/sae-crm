@@ -129,6 +129,7 @@ export function AssistantForm({ assistantId }: AssistantFormProps) {
           inputMode="numeric"
           pattern="[0-9]*"
           value={dni}
+          maxLength={8}
           onChange={(e) => setDni(e.target.value)}
           required
         />

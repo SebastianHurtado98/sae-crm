@@ -211,8 +211,8 @@ export function CompanyForm({ companyId }: CompanyFormProps) {
           inputMode="numeric"
           pattern="[0-9]*"
           value={ruc}
-          onChange={(e) => setRuc(e.target.value)}
           maxLength={11}
+          onChange={(e) => setRuc(e.target.value)}
           required
         />
       </div>
