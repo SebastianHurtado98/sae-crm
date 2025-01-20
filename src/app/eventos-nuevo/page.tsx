@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from 'next/link'
-import { PlusCircle, Pencil, ChevronDown, Trash2 } from 'lucide-react'
+import { PlusCircle, Pencil, ChevronDown, Trash2, Eye } from 'lucide-react'
 
 type MacroEvent = {
     id: number
@@ -174,8 +174,14 @@ export default function EventosNuevo() {
                                     <div className="mt-4">
                                         <ul>
                                             {filteredLists.map((list) => (
-                                                <li key={list.id} className="mb-2">
+                                                <li key={list.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{list.name}</p>
+                                                    <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/eventos/listas`}>
+                                                        <Eye className="h-4 w-4" />
+                                                        <span className="sr-only">Ver</span>
+                                                    </Link>
+                                                    </Button>
                                                 </li>
                                             ))}
                                         </ul>
@@ -185,7 +191,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos-nuevo/${macroEvent.id}/lists/new`}>
+                                        <Link href={`/eventos/listas`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear lista
                                         </Link>
                                     </Button>                                    
@@ -196,8 +202,14 @@ export default function EventosNuevo() {
                                     <div className="mt-4">
                                         <ul>
                                             {filteredEvents.map((event) => (
-                                                <li key={event.id} className="mb-2">
+                                                <li key={event.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{event.name}</p>
+                                                    <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/eventos/${event.id}`}>
+                                                        <Eye className="h-4 w-4" />
+                                                        <span className="sr-only">Ver</span>
+                                                    </Link>
+                                                    </Button>
                                                 </li>
                                             ))}
                                         </ul>
@@ -207,7 +219,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos-nuevo/${macroEvent.id}/events/new`}>
+                                        <Link href={`/eventos/new`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear evento
                                         </Link>
                                     </Button>
