@@ -12,7 +12,7 @@ type MacroEvent = {
     name: string
 }
 
-/*type List = {
+type List = {
     id: number
     name: string
     macro_event_id: number
@@ -25,24 +25,47 @@ type Event = {
     place: string
     register_open: boolean
     macro_event_id: number
-}*/
+}
 
 export default function EventosNuevo() {
     const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([])
+    const [events, setEvents] = useState<Event[]>([])
+    const [filteredEvents, setFilteredEvents] = useState<Event[]>([])
+    const [lists, setLists] = useState<List[]>([])
+    const [filteredLists, setFilteredLists] = useState<List[]>([])
+    const [expandedMacroEvent, setExpandedMacroEvent] = useState<number | null>(null)
     
     useEffect(() => {
         fetchEvents()
     }, [])
 
     async function fetchEvents() {
-        const { data, error } = await supabase.from('macro_event').select('*')
+        const { data: dataMacroEvent, error: errorMacroEvent } = await supabase.from('macro_event').select('*')
 
-        if (error) {
-            console.error('Error fetching macro_events:', error)
+        if (errorMacroEvent) {
+            console.error('Error fetching macro_events:', errorMacroEvent)
           } else {
-            console.log(data)
-            setMacroEvents(data || [])
-          }
+            console.log(dataMacroEvent)
+            setMacroEvents(dataMacroEvent || [])
+        }
+
+        const { data: dataEvent, error: errorEvent } = await supabase.from('event').select('*')
+
+        if (errorEvent) {
+            console.error('Error fetching events:', errorEvent)
+          } else {
+            console.log(dataEvent)
+            setEvents(dataEvent || [])
+        }
+
+        const { data: dataList, error: errorList } = await supabase.from('list').select('*')
+
+        if (errorList) {
+            console.error('Error fetching lists:', errorList)
+          } else {
+            console.log(dataList)
+            setLists(dataList || [])
+        }
     }
 
     async function deleteEvent(macroEventId: number) {
@@ -67,6 +90,21 @@ export default function EventosNuevo() {
         }
     }
 
+    const toggleExpand = (macroEventId: number) => {
+        if(expandedMacroEvent === macroEventId){
+            setExpandedMacroEvent(null)
+        } else{
+            setExpandedMacroEvent(macroEventId)
+
+            const filteredEvents = events.filter(event => event.macro_event_id === macroEventId);
+            setFilteredEvents(filteredEvents);
+            console.log(filteredEvents)
+            const filteredLists = lists.filter(list => list.macro_event_id === macroEventId);
+            setFilteredLists(filteredLists);
+            console.log(filteredLists)
+        }        
+    }
+
     return (
         <div className="container mx-auto py-10">
           <div className="mb-8">
@@ -88,7 +126,9 @@ export default function EventosNuevo() {
             </TableHeader>
             <TableBody>
             {macroEvents.map((macroEvent) => {
+                        const isExpanded = expandedMacroEvent === macroEvent.id
                 return (
+                <>
                 <TableRow key={macroEvent.id}>
                     <TableCell>{macroEvent.name}</TableCell>
                     <TableCell>
@@ -108,15 +148,76 @@ export default function EventosNuevo() {
                             <span className="sr-only">Borrar</span>
                         </Button>
 
-                        <Button variant="outline" size="sm" asChild>
-                        <Link href={`/eventos-nuevo`}>
+                        <Button variant="outline" size="sm"
+                            onClick={() => toggleExpand(macroEvent.id)}>
                             <ChevronDown className="h-4 w-4" />
                             <span className="sr-only">Ver</span>
-                        </Link>
-                        </Button>                        
-                    </div>
+                        </Button>
+                    </div>                    
                     </TableCell>
                 </TableRow>
+
+                {isExpanded && (
+                    <TableRow>
+                        <TableCell colSpan={2}>
+                            <div className="p-4 bg-gray-100 border rounded">
+                                <h2 className="text-lg font-bold mb-2">Detalles</h2>
+                                <p className="text-md mb-4">{macroEvent.name}</p>
+                                <Button asChild>
+                                    <Link href={`/eventos-nuevo/${macroEvent.id}/report`}>
+                                        Ver reporte
+                                    </Link>
+                                </Button>
+
+                                <h3 className="text-md font-semibold mt-4 mb-2">Listas</h3>
+                                {filteredLists.length > 0 ? (
+                                    <div className="mt-4">
+                                        <ul>
+                                            {filteredLists.map((list) => (
+                                                <li key={list.id} className="mb-2">
+                                                    <p className="text-sm">{list.name}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500">No hay listas disponibles para este macro evento.</p>
+                                )}
+                                <div className="flex space-x-2">
+                                    <Button asChild>
+                                        <Link href={`/eventos-nuevo/${macroEvent.id}/lists/new`}>
+                                            <PlusCircle className="mr-2 h-4 w-4" /> Crear lista
+                                        </Link>
+                                    </Button>                                    
+                                </div>
+
+                                <h3 className="text-md font-semibold mt-4 mb-2">Eventos</h3>
+                                {filteredEvents.length > 0 ? (
+                                    <div className="mt-4">
+                                        <ul>
+                                            {filteredEvents.map((event) => (
+                                                <li key={event.id} className="mb-2">
+                                                    <p className="text-sm">{event.name}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500">No hay eventos disponibles para este macro evento.</p>
+                                )}
+                                <div className="flex space-x-2">
+                                    <Button asChild>
+                                        <Link href={`/eventos-nuevo/${macroEvent.id}/events/new`}>
+                                            <PlusCircle className="mr-2 h-4 w-4" /> Crear evento
+                                        </Link>
+                                    </Button>
+                                    
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                )}
+                </>
                 )
             })}
             </TableBody>
