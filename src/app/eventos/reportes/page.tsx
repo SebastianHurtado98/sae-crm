@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 const macroReports = [
   {
     name: "Encuentro Diciembre",
+    id: "2",
     groups: [
       { id: 1, name: "Virtual AM", eventIds: [22] },
       { id: 2, name: "Virtual PM", eventIds: [23] },
@@ -21,6 +22,7 @@ const macroReports = [
   },
   {
     name: "Encuentro Enero",
+    id: "1",
     groups: [
       { id: 1, name: "Martes 14 almuerzo", eventIds: [53] },
       { id: 2, name: "Miércoles 15 desayuno", eventIds: [60] },
@@ -159,7 +161,7 @@ export default function CompareEventsPage() {
 
   useEffect(() => {
     if (selectedMacroReport) {
-      const report = macroReports.find((r) => r.name === selectedMacroReport);
+      const report = macroReports.find((r) => r.id === selectedMacroReport);
       if (report) {
         const newGroups = report.groups.map((group) => ({
           id: group.id,
@@ -403,7 +405,7 @@ export default function CompareEventsPage() {
           </SelectTrigger>
           <SelectContent>
             {macroReports.map((report) => (
-              <SelectItem key={report.name} value={report.name}>
+              <SelectItem key={report.id} value={report.id}>
                 {report.name}
               </SelectItem>
             ))}
