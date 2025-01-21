@@ -94,7 +94,7 @@ const saeMeetingsOptions = [
 
 const statusOptions = ['Cliente SAE', 'Ex-cliente SAE', 'No cliente SAE']
 
-export function ImportUsers({ eventIds }: { eventIds: number[] }) {
+export function ImportUsers({ listId }: { listId: number }) {
   const [executives, setExecutives] = useState<Executive[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [selectedUserTypes, setSelectedUserTypes] = useState<Option[]>([]);
@@ -233,35 +233,33 @@ export function ImportUsers({ eventIds }: { eventIds: number[] }) {
     setSelectAll(!selectAll);
   };
 
-  async function createEventGuestsBatch(eventIds: number[], executiveIds: number[]) {
-    const eventGuests = executiveIds.flatMap((executiveId) =>
-      eventIds.map((eventId) => {
-        const executive = executives.find((e) => e.id === executiveId);
-        return {
-          event_id: eventId,
-          executive_id: executiveId,
-          company_id: executive?.company_id,
-          email: executive?.email.toLowerCase().trim(),
-          is_client_company: true,
-          is_user: true,
-          name: "",
-        };
-      })
-    );
+  async function createGuestsBatch(listId: number, executiveIds: number[]) {
+    const guests = executiveIds.map((executiveId) => {
+      const executive = executives.find(e => e.id === executiveId)
+      return {
+        list_id: listId,
+        executive_id: executiveId,
+        company_id: executive?.company_id,
+        email: executive?.email.toLowerCase().trim(),
+        is_client_company: true,
+        is_user: true,
+        name: ""
+      }
+    })
   
     const { error } = await supabase
-      .from('event_guest')
-      .upsert(eventGuests, { onConflict: "executive_id, event_id" });
+      .from('guest')
+      .upsert(guests, { onConflict: "executive_id, list_id" });
   
     if (error) {
-      console.error('Error creating/updating event_guests:', error);
+      console.error('Error creating/updating guests:', error);
       toast({
         title: "Error",
         description: "Hubo un problema al importar los usuarios seleccionados.",
         variant: "destructive",
       });
     } else {
-      console.log('Event guests created/updated successfully!');
+      console.log('Guests created/updated successfully!');
       toast({
         title: "Éxito",
         description: "Los usuarios seleccionados han sido importados correctamente.",
@@ -280,7 +278,7 @@ export function ImportUsers({ eventIds }: { eventIds: number[] }) {
       })
       return
     }
-    createEventGuestsBatch(eventIds, selectedExecutives)
+    createGuestsBatch(listId, selectedExecutives)
   }
 
   const getForumSemestrales = (executive: Executive) => {

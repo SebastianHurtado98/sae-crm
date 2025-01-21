@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import * as XLSX from 'xlsx'
 import { toast } from "@/hooks/use-toast"
 
-export function ImportExternals({ eventIds }: { eventIds: number[] }) {
+export function ImportExternals({ listId }: { listId: number }) {
   const [file, setFile] = useState<File | null>(null)
 
   // Manejadores para drag and drop
@@ -31,7 +31,7 @@ export function ImportExternals({ eventIds }: { eventIds: number[] }) {
   const downloadTemplate = () => {
     const headers = [
       ['Empresa', 'Nombre', 'Apellido', 'Correo', 'Cargo', 
-        'Tipo de usuario', 'Tipo de membresia', 'Reemplaza a (nombre y apellido)', 'Reemplaza a (correo)','Se registró (si/no)'],
+        'Tipo de usuario', 'Tipo de membresia'],
     ]
 
     const workbook = XLSX.utils.book_new()
@@ -66,34 +66,24 @@ export function ImportExternals({ eventIds }: { eventIds: number[] }) {
         Cargo: string
         'Tipo de usuario': string
         'Tipo de membresia': string
-        'Reemplaza a (nombre y apellido)': string
-        'Reemplaza a (correo)': string
-        'Se registró (si/no)': string
       }>
 
-      const eventGuests = eventIds.flatMap((eventId) =>
-        jsonData.map((row) => ({
-          event_id: eventId,
-          company_razon_social: row.Empresa,
-          name: row.Nombre.trim() + ' ' + row.Apellido.trim(),
-          email: row.Correo.toLowerCase().trim(),
-          position: row.Cargo,
-          tipo_usuario: row['Tipo de usuario'],
-          tipo_membresia: row['Tipo de membresia'],
-          reemplaza_a_nombre: row['Reemplaza a (nombre y apellido)'],
-          reemplaza_a_correo: row['Reemplaza a (correo)'].toLowerCase().trim(),
-          registered:
-            row['Se registró (si/no)'].toLowerCase() === 'si' ||
-            row['Se registró (si/no)'].toLowerCase() === 'sí',
-          is_user: false,
-          is_client_company: false,
-        }))
-      );
+      const guests = jsonData.map((row) => ({
+        list_id: listId,
+        company_razon_social: row.Empresa,
+        name: row.Nombre.trim() + ' ' + row.Apellido.trim(),
+        email: row.Correo.toLowerCase().trim(),
+        position: row.Cargo,
+        tipo_usuario: row['Tipo de usuario'],
+        tipo_membresia: row['Tipo de membresia'],        
+        is_user: false,
+        is_client_company: false
+      }))
       
 
       const { error } = await supabase
-        .from('event_guest')
-        .upsert(eventGuests)
+        .from('guest')
+        .upsert(guests)
 
       if (error) {
         console.error('Error uploading event guests:', error)

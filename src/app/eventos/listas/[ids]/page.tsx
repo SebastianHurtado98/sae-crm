@@ -4,58 +4,52 @@ import { useState, useEffect, use } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EventGuestTable } from '@/components/macroEvent/EventGuestTable'
+import { GuestTable } from '@/components/macroEvent/EventGuestTable'
 import { CreateGuestForm } from '@/components/macroEvent/CreateGuestForm'
 import { ImportUsers } from '@/components/macroEvent/ImportUsers'
 import { ImportExternals } from '@/components/macroEvent/ImportExternals'
 import * as XLSX from 'xlsx'
 
-type Event = {
+type List = {
   id: number
   name: string
-  event_type: string
-  date_hour: string
-  place: string
-  register_open: boolean
+  macro_event_id: number
 }
 
-export default function EventDetailPage({ params }: { params: Promise<{ ids?: string }> }) {
-  const resolvedParams = use(params); // Resolvemos la Promise de `params`
-  const idsParam = resolvedParams?.ids ? decodeURIComponent(resolvedParams.ids) : '';
-  const eventIds = idsParam ? idsParam.split(',').map(Number) : [];
-
-  console.log(eventIds);
-
-  const [events, setEvents] = useState<Event[]>([]);
+export default function EventDetailPage({ params }: { params: Promise<{ ids: number }> }) {
+  const resolvedParams = use(params);
+  const [list, setList] = useState<List>()
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  async function fetchEvents() {
+  async function fetchEvents() {    
     const { data, error } = await supabase
-      .from('event')
+      .from('list')
       .select('*')
-      .in('id', eventIds);
+      .eq('id', resolvedParams.ids)
+      .single()
 
     if (error) {
-      console.error('Error fetching events:', error);
+      console.error('Error fetching list:', error);
     } else {
-      setEvents(data || []);
+      console.log("List", data)
+      setList(data)
     }
+
   }
 
-  if (events.length === 0) return <div>Cargando...</div>;
 
   const handleExcelClick = async () => {
     const { data, error } = await supabase
-      .from('event_guest')
+      .from('guest')
       .select(`
         *,
         executive:executive_id (name, last_name)
       `)
-      .in('event_id', eventIds);
+      .eq('list_id', resolvedParams.ids);
 
     if (error) {
       console.error('Error fetching guests:', error);
@@ -69,8 +63,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids?: st
           name: guest.is_user
             ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
             : guest.name,
-          registered: guest.registered === null ? false : guest.registered,
-          registration_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`
         }));
 
         const wb = XLSX.utils.book_new();
@@ -82,7 +74,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids?: st
 
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'event_guests.xlsx';
+        link.download = 'guests.xlsx';
         link.style.display = 'none';
 
         document.body.appendChild(link);
@@ -97,7 +89,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids?: st
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-xl font-bold mb-6">Eventos</h1>
+      <h1 className="text-xl font-bold mb-6">{list?.name}</h1>
 
       <Tabs defaultValue="invitados" className="w-full">
         <TabsList className="sm:hidden flex gap-2 overflow-x-auto scrollbar-hide w-full">
@@ -111,7 +103,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids?: st
             Importar Externos
           </TabsTrigger>
         </TabsList>
-        <TabsList className="hidden sm:grid w-full grid-cols-6">
+        <TabsList className="hidden sm:grid w-full grid-cols-3">
           <TabsTrigger value="invitados">Invitados</TabsTrigger>
           <TabsTrigger value="importar-usuarios">Importar Usuarios</TabsTrigger>
           <TabsTrigger value="importar-externos">Importar Externos</TabsTrigger>
@@ -127,17 +119,17 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids?: st
                 <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
               </div>
             </div>
-            {showForm && <CreateGuestForm eventIds={eventIds} onComplete={() => setShowForm(false)} />}
-            <EventGuestTable eventIds={eventIds} />
+            {showForm && <CreateGuestForm listId={resolvedParams.ids} onComplete={() => setShowForm(false)} />}
+            <GuestTable listId={resolvedParams.ids} />
           </div>
         </TabsContent>
 
         <TabsContent value="importar-usuarios">
-          <ImportUsers eventIds={eventIds} />
+          <ImportUsers listId={resolvedParams.ids} />
         </TabsContent>
 
         <TabsContent value="importar-externos">
-          <ImportExternals eventIds={eventIds} />
+          <ImportExternals listId={resolvedParams.ids} />
         </TabsContent>
       </Tabs>
     </div>

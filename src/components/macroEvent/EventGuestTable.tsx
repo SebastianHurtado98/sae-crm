@@ -9,9 +9,9 @@ import { EditGuestForm } from '@/components/macroEvent/EditGuestForm'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-type EventGuest = {
+type Guest = {
   id: string
-  event_id: number
+  list_id: number
   company_id: number | null
   is_client_company: boolean
   company_razon_social: string | null
@@ -21,14 +21,6 @@ type EventGuest = {
   dni: string
   email: string
   phone: string
-  assistant_name: string | null
-  assistant_email: string | null
-  substitute: boolean
-  substitute_name: string | null
-  substitute_email: string | null
-  virtual_session_time: number | null
-  registered: boolean
-  assisted: boolean
   position: string | null
   company?: {
     razon_social: string
@@ -42,12 +34,10 @@ type EventGuest = {
   }
   tipo_usuario?: string
   tipo_membresia?: string
-  reemplaza_a_nombre?: string
-  reemplaza_a_correo?: string
 }
 
-export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
-  const [guests, setGuests] = useState<EventGuest[]>([])
+export function GuestTable({ listId }: { listId: number }) {
+  const [guests, setGuests] = useState<Guest[]>([])
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -63,7 +53,7 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
     console.log("Fetching guests");
   
     const { data, error, count } = await supabase
-      .from('event_guest')
+      .from('guest')
       .select(
         `
         *,
@@ -72,7 +62,7 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
       `,
         { count: 'exact' }
       )
-      .in('event_id', eventIds)
+      .eq('list_id', listId)
       .ilike('name', `%${searchQuery}%`)
       .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);
   
@@ -82,6 +72,7 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
     }
   
     if (data && count !== null) {
+      console.log("Guests", data)
       // Filtrar invitados únicos por correo
 
       // Ordenar datos
@@ -104,7 +95,7 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
 
   async function deleteGuest(guestId: string) {
     const { error } = await supabase
-      .from('event_guest')
+      .from('guest')
       .delete()
       .eq('id', guestId)
 
@@ -171,11 +162,9 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
             <TableHead>Nombre</TableHead>
             <TableHead>Empresa</TableHead>
             <TableHead>Cargo</TableHead>
-            <TableHead>Email del evento</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Tipo de usuario</TableHead>
             <TableHead>Membresía</TableHead>
-            <TableHead>Reemplaza a</TableHead>
-            <TableHead>Link registro</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -202,12 +191,6 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
                 <TableCell>{guest.email}</TableCell>
                 <TableCell>{guest.tipo_usuario}</TableCell>
                 <TableCell>{guest.tipo_membresia}</TableCell>
-                <TableCell>{guest.reemplaza_a_nombre}</TableCell>
-                <TableCell>
-                  <a href={`https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`} target='_blank'>
-                    <Button variant="outline" size="sm">Abrir</Button>
-                  </a>
-                </TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button 
@@ -227,7 +210,7 @@ export function EventGuestTable({ eventIds }: { eventIds: number[] }) {
                         <AlertDialogHeader>
                           <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente al invitado del evento.
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente al invitado de la lista.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

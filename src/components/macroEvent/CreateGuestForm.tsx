@@ -22,11 +22,11 @@ type Executive = {
 }
 
 type CreateGuestFormProps = {
-  eventIds: number[]
+  listId: number
   onComplete: () => void
 }
 
-export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) {
+export function CreateGuestForm({ listId, onComplete }: CreateGuestFormProps) {
   const [isClientCompany, setIsClientCompany] = useState(false)
   const [isUser, setIsUser] = useState(false)
   const [companyId, setCompanyId] = useState<number | null>(null)
@@ -39,8 +39,6 @@ export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) 
   const [position, setPosition] = useState('')
   const [tipoUsuario, setTipoUsuario] = useState('')
   const [tipoMembresia, setTipoMembresia] = useState('')
-  const [reemplazaANombre, setReemplazaANombre] = useState('')
-  const [reemplazaACorreo, setReemplazaACorreo] = useState('')
   const [companies, setCompanies] = useState<Company[]>([])
   const [executives, setExecutives] = useState<Executive[]>([])
 
@@ -76,13 +74,12 @@ export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const guests = eventIds.map((eventId) => ({
-      event_id: eventId,
-      is_client_company: isClientCompany,
-      is_user: isUser,
+    const guest = {      
       company_id: isClientCompany ? companyId : null,
+      is_client_company: isClientCompany,
       company_razon_social: isClientCompany ? null : companyRazonSocial,
       executive_id: isUser ? executiveId : null,
+      is_user: isUser,      
       name,
       dni,
       email,
@@ -90,11 +87,10 @@ export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) 
       position,
       tipo_usuario: tipoUsuario,
       tipo_membresia: tipoMembresia,
-      reemplaza_a_nombre: reemplazaANombre,
-      reemplaza_a_correo: reemplazaACorreo,
-    }));
+      list_id: listId,
+    };
 
-    const { error } = await supabase.from('event_guest').insert(guests);
+    const { error } = await supabase.from('guest').insert(guest);
     if (error) console.error('Error creating guests:', error);
     else onComplete();
   }
@@ -246,7 +242,6 @@ export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) 
               id="tipoUsuario"
               value={tipoUsuario}
               onChange={(e) => setTipoUsuario(e.target.value)}
-              required
             />
           </div>
           <div>
@@ -255,23 +250,6 @@ export function CreateGuestForm({ eventIds, onComplete }: CreateGuestFormProps) 
               id="tipoMembresia"
               value={tipoMembresia}
               onChange={(e) => setTipoMembresia(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="reemplazaANombre">Reemplaza a (nombre y apellido)</Label>
-            <Input
-              id="reemplazaANombre"
-              value={reemplazaANombre}
-              onChange={(e) => setReemplazaANombre(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="reemplazaACorreo">Reemplaza a (correo)</Label>
-            <Input
-              id="reemplazaACorreo"
-              value={reemplazaACorreo}
-              onChange={(e) => setReemplazaACorreo(e.target.value)}
             />
           </div>
         </>

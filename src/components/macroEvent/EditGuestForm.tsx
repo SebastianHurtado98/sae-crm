@@ -16,8 +16,6 @@ export function EditGuestForm({ guestId, onComplete }: EditGuestFormProps) {
     name: '',
     email: '',
     position: '',
-    reemplaza_a_nombre: '',
-    reemplaza_a_correo: '',
     tipo_usuario: '',
     tipo_membresia: '',
   });
@@ -28,9 +26,9 @@ export function EditGuestForm({ guestId, onComplete }: EditGuestFormProps) {
 
   async function fetchGuest() {
     const { data, error } = await supabase
-      .from('event_guest')
+      .from('guest')
       .select(
-        'name, email, position, reemplaza_a_nombre, reemplaza_a_correo, tipo_usuario, tipo_membresia'
+        'name, email, position, tipo_usuario, tipo_membresia'
       )
       .eq('id', guestId)
       .single();
@@ -46,7 +44,7 @@ export function EditGuestForm({ guestId, onComplete }: EditGuestFormProps) {
     e.preventDefault();
 
     const { error } = await supabase
-      .from('event_guest')
+      .from('guest')
       .update(formData)
       .eq('id', guestId);
 
@@ -93,26 +91,6 @@ export function EditGuestForm({ guestId, onComplete }: EditGuestFormProps) {
           name="position"
           type="text"
           value={formData.position}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <Label htmlFor="reemplaza_a_nombre">Reemplaza a (Nombre)</Label>
-        <Input
-          id="reemplaza_a_nombre"
-          name="reemplaza_a_nombre"
-          type="text"
-          value={formData.reemplaza_a_nombre}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <Label htmlFor="reemplaza_a_correo">Reemplaza a (Correo)</Label>
-        <Input
-          id="reemplaza_a_correo"
-          name="reemplaza_a_correo"
-          type="email"
-          value={formData.reemplaza_a_correo}
           onChange={handleChange}
         />
       </div>
