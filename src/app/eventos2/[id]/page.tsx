@@ -5,8 +5,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EventGuestTable } from '@/components/EventGuestTable'
-import { CreateGuestForm } from '@/components/CreateGuestForm'
+import { EventGuestTable2 } from '@/components/EventGuestTable2'
 import { UploadZoomAttendance } from '@/components/UploadZoomAttendance'
 import { EventReportTab } from '@/components/EventReportTab'
 import { ScanQRTab } from '@/components/ScanGuests'
@@ -21,18 +20,22 @@ type Event = {
   date_hour: string
   place: string
   register_open: boolean
+  macro_event_id: number
 }
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const [event, setEvent] = useState<Event | null>(null)
-  const [showForm, setShowForm] = useState(false)
+  const [hasList, setHasList] = useState<boolean>(false)
+  const [eventLists, setEventLists] = useState<{ id: number; name: string }[]>([]);
+  const [selectedListId, setSelectedListId] = useState<number | null>(null);
 
   const searchParams = useSearchParams()
   const defaultTab = searchParams.get('tab') || 'invitados' // Leer el tab de la URL o usar "invitados" por defecto.
 
   useEffect(() => {
     fetchEvent()
+    checkIfHasList()    
   }, [])
 
   async function fetchEvent() {
@@ -45,7 +48,36 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     if (error) {
       console.error('Error fetching event:', error)
     } else {
+      console.log(data)
       setEvent(data)
+      fetchLists(data.macro_event_id)
+    }
+  }
+
+  async function checkIfHasList() {
+    const { data, error } = await supabase
+      .from('event_list')
+      .select('*')
+      .eq('event_id', resolvedParams.id)
+      .single(); 
+  
+    if (error) {
+      console.error('Error checking event list:', error);
+    } else {
+      setHasList(!!data);
+    }
+  }
+
+  async function fetchLists(macro_event_id: number) { 
+    const { data, error } = await supabase
+      .from('list')
+      .select('id, name')
+      .eq('macro_event_id', macro_event_id);
+  
+    if (error) {
+      console.error('Error fetching event lists:', error);
+    } else {
+      setEventLists(data || []);
     }
   }
 
@@ -114,6 +146,48 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const handleSelectList = async () => {
+    if (selectedListId) {
+
+      const { error: eventListError } = await supabase
+        .from('event_list')
+        .insert([
+          { event_id: event.id, list_id: selectedListId },
+        ])
+      if (eventListError) {
+        console.error('Error insert event_list:', eventListError)
+        return
+      }
+
+      const { data: guestData, error: guestError } = await supabase
+        .from('guest')
+        .select('id')
+        .eq('list_id', selectedListId)
+
+      if (guestError) {
+        console.error('Error fetching guest:', guestError)
+      } else {
+
+        const guestEventEntries = guestData.map(guest => ({
+          guest_id: guest.id,
+          event_id: event.id,
+          name: "",
+        }));
+  
+        const { error: guestEventError } = await supabase
+          .from('event_guest')
+          .insert(guestEventEntries);
+  
+        if (guestEventError) {
+          console.error('Error insert event_guest:', guestEventError);
+        }
+      }
+      
+      setHasList(true)
+    } else {
+      console.log('Por favor selecciona una lista primero');
+    }
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -158,18 +232,38 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
       </TabsList>
         
         <TabsContent value="invitados">
+          {hasList ? 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <Button onClick={() => setShowForm(!showForm)}>
-                {showForm ? 'Cerrar formulario' : 'Añadir invitado'}
-              </Button>
               <div className="flex ml-auto space-x-2">
                 <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
               </div>
             </div>
-            {showForm && <CreateGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
-            <EventGuestTable eventId={parseInt(resolvedParams.id)} />
-          </div>
+            <EventGuestTable2 eventId={parseInt(resolvedParams.id)} />
+          </div> 
+          :
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="event-list-dropdown" className="block text-sm font-medium text-gray-700">
+                Selecciona una lista de invitados:
+              </label>
+              <select
+                id="event-list-dropdown"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                value={selectedListId || ''}
+                onChange={(e) => setSelectedListId(Number(e.target.value))}
+              >
+                <option value="" disabled>Selecciona una lista</option>
+                {eventLists.map((list) => (
+                  <option key={list.id} value={list.id}>{list.name}</option>
+                ))}
+              </select>
+            </div>
+            <Button variant="outline" onClick={handleSelectList}>
+              Usar Lista de invitados
+            </Button>
+          </div> 
+          }
         </TabsContent>
              
         <TabsContent value="subir-asistencia">
