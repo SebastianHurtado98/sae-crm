@@ -35,16 +35,16 @@ type EventGuest = {
     position: string | null
     tipo_usuario: string | null
     tipo_membresia: string | null
+    executive?: {
+      name: string
+      last_name: string
+      email: string
+      office_phone: string
+      position: string
+    }
   }
   company?: {
     razon_social: string
-  }
-  executive?: {
-    name: string
-    last_name: string
-    email: string
-    office_phone: string
-    position: string
   }
 }
 
@@ -66,9 +66,8 @@ export function EventGuestTable2({ eventId }: { eventId: number }) {
       .from('event_guest')
       .select(`
         *,
-        guest:guest_id(*),
-        company:company_id (razon_social),
-        executive:executive_id (name, last_name, email, office_phone, position)
+        guest:guest_id(*, executive:executive_id (name, last_name, email, office_phone, position)),
+        company:company_id (razon_social)        
       `, { count: 'exact' })
       .eq('event_id', eventId)
       .ilike('name', `%${searchQuery}%`)
@@ -278,7 +277,7 @@ export function EventGuestTable2({ eventId }: { eventId: number }) {
               <TableRow key={eventGuest.id}>
                 <TableCell>
                   {eventGuest.guest.is_user 
-                    ? `${eventGuest.executive?.name} ${eventGuest.executive?.last_name || ''}`.trim()
+                    ? `${eventGuest.guest.executive?.name} ${eventGuest.guest.executive?.last_name || ''}`.trim()
                     : eventGuest.guest.name
                   }
                 </TableCell>
@@ -289,7 +288,7 @@ export function EventGuestTable2({ eventId }: { eventId: number }) {
                 </TableCell>
                 <TableCell>
                   {eventGuest.guest.is_user 
-                    ? eventGuest.executive?.position ?? '' 
+                    ? eventGuest.guest.executive?.position ?? '' 
                     : eventGuest.guest.position ?? ''}
                 </TableCell>
                 <TableCell>{eventGuest.guest.email}</TableCell>
