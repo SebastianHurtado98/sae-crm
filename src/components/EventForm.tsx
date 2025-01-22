@@ -12,16 +12,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 type EventFormProps = {
   eventId?: number
   copyEventId?: number
+  macroEventId?: string;
+}
+
+type MacroEvent = {
+  id: number
+  name: string
 }
 
 const eventTypeOptions = ['Presencial', 'Virtual', 'Híbrido']
 
-export function EventForm({ eventId, copyEventId }: EventFormProps) {
+export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEventId }: EventFormProps) {
   const [name, setName] = useState('')
   const [eventType, setEventType] = useState('')
   const [dateHour, setDateHour] = useState('')
   const [place, setPlace] = useState('')
   const [registerOpen, setRegisterOpen] = useState(false)
+  const [macroEventId, setMacroEventId] = useState(initialMacroEventId || '')
+  const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([])
 
   const router = useRouter()
 
@@ -44,7 +52,20 @@ export function EventForm({ eventId, copyEventId }: EventFormProps) {
     }
   }, [eventId])
 
+  const fetchMacroEvent = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('macro_event')
+      .select('id, name')
+
+    if (error) {
+      console.error('Error fetching macro_event:', error)
+    } else {
+      setMacroEvents(data || [])
+    }
+}, [])
+
   useEffect(() => {
+    fetchMacroEvent()
     if (eventId) {
       fetchEvent()
     }
@@ -57,7 +78,8 @@ export function EventForm({ eventId, copyEventId }: EventFormProps) {
       event_type: eventType,
       date_hour: dateHour,
       place,
-      register_open: registerOpen
+      register_open: registerOpen,
+      macro_event_id: macroEventId
     }
 
     if (eventId) {
@@ -67,7 +89,7 @@ export function EventForm({ eventId, copyEventId }: EventFormProps) {
         .eq('id', eventId)
 
       if (error) console.error('Error updating event:', error)
-      else router.push('/eventos')
+      else router.push('/eventos2')
     } else {
       const { data: newEvent, error } = await supabase
         .from('event')
@@ -108,12 +130,28 @@ export function EventForm({ eventId, copyEventId }: EventFormProps) {
         }
       }
 
-      router.push('/eventos')
+      router.push('/eventos2')
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="macroEventId">Macro Evento</Label>
+        <Select value={macroEventId} onValueChange={setMacroEventId}>
+        <SelectTrigger>
+            <SelectValue placeholder="Selecciona un macro evento" />
+        </SelectTrigger>
+        <SelectContent>
+            <SelectItem value="0">Otro</SelectItem>
+            {macroEvents.map((macroEvent) => (
+            <SelectItem key={macroEvent.id} value={macroEvent.id.toString()}>
+                {`${macroEvent.name}`}
+            </SelectItem>
+            ))}
+        </SelectContent>
+        </Select>
+      </div>
       <div>
         <Label htmlFor="name">Nombre del evento</Label>
         <Input

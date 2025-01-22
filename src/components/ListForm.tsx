@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type ListFormProps = {
   listId?: number;
+  macroEventId?: string;
 };
 
 type MacroEvent = {
@@ -17,9 +18,9 @@ type MacroEvent = {
     name: string
 }
 
-export function ListForm({ listId }: ListFormProps) {
+export function ListForm({ listId, macroEventId: initialMacroEventId }: ListFormProps) {
     const [name, setName] = useState('');
-    const [macroEventId, setMacroEventId] = useState('')
+    const [macroEventId, setMacroEventId] = useState(initialMacroEventId || '')
     const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([])
     const router = useRouter();
 

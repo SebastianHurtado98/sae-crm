@@ -10,7 +10,9 @@ export default function NewEventPage() {
       <h1 className="text-xl font-bold mb-5">Agregar Nuevo Evento</h1>
       <Suspense fallback={<div>Loading...</div>}>
         <SearchParamsHandler>
-          {(copyEventId) => <EventForm copyEventId={copyEventId} />}
+          {(copyEventId, macroEventId) => (
+            <EventForm copyEventId={copyEventId} macroEventId={macroEventId} />
+          )}
         </SearchParamsHandler>
       </Suspense>
     </div>

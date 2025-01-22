@@ -40,7 +40,10 @@ export default function EventosNuevo() {
     }, [])
 
     async function fetchEvents() {
-        const { data: dataMacroEvent, error: errorMacroEvent } = await supabase.from('macro_event').select('*')
+        const { data: dataMacroEvent, error: errorMacroEvent } = await supabase
+        .from('macro_event')
+        .select('*')
+        .order('created_at', { ascending: true })
 
         if (errorMacroEvent) {
             console.error('Error fetching macro_events:', errorMacroEvent)
@@ -143,6 +146,7 @@ export default function EventosNuevo() {
                         <Button
                         variant="outline"
                         size="sm"
+                        disabled
                         onClick={() => deleteEvent(macroEvent.id)}>
                             <Trash2 className="h-4 w-4" />
                             <span className="sr-only">Borrar</span>
@@ -177,7 +181,7 @@ export default function EventosNuevo() {
                                                 <li key={list.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{list.name}</p>
                                                     <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/eventos/listas`}>
+                                                    <Link href={`/eventos/listas/${list.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
@@ -191,7 +195,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos/listas`}>
+                                        <Link href={`/eventos/listas/new?macroEventId=${macroEvent.id}`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear lista
                                         </Link>
                                     </Button>                                    
@@ -205,7 +209,7 @@ export default function EventosNuevo() {
                                                 <li key={event.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{event.name}</p>
                                                     <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/eventos/${event.id}`}>
+                                                    <Link href={`/eventos2/${event.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
@@ -219,7 +223,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos/new`}>
+                                        <Link href={`/eventos2/new?macroEventId=${macroEvent.id}`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear evento
                                         </Link>
                                     </Button>

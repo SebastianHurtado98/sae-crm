@@ -61,7 +61,7 @@ export function Navbar() {
               <Link href="/proyectos">Proyectos</Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="/eventos">Eventos</Link>
+              <Link href="/eventos-nuevo">Eventos</Link>
             </Button>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function Navbar() {
               <Link href="/proyectos">Proyectos</Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="/eventos">Eventos</Link>
+              <Link href="/eventos-nuevo">Eventos</Link>
             </Button>
           </div>
         )}
