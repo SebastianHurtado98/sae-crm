@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
-import { Eye} from 'lucide-react'
+import { Eye, PlusCircle} from 'lucide-react'
 
 type List = {
   id: number
@@ -36,6 +36,11 @@ export default function EventosPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Listas de Invitados</h1>
         </div>
+        <Button asChild>
+            <Link href="/eventos/listas/new">
+              <PlusCircle className="mr-2 h-4 w-4" /> Agregar lista
+            </Link>
+          </Button>
       </div>
       <Table>
         <TableHeader>
