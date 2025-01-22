@@ -12,45 +12,45 @@ import { Eye, Pencil, Building, UserPlus } from 'lucide-react'
 
 type Company = {
   id: number
-  ruc: string
-  razon_social: string
-  nombre_comercial: string
-  seats: number
-  country: string
-  department: string
-  address: string
-  phone_number: string
-  industry: string
-  status: string
-  enrollment_date: string
-  notes: string
-  headcount: number
-  sales: number
+  ruc: string | null
+  razon_social: string | null
+  nombre_comercial: string | null
+  seats: number | null
+  country: string | null
+  department: string | null
+  address: string | null
+  phone_number: string | null
+  industry: string | null
+  status: string | null
+  enrollment_date: string | null
+  notes: string | null
+  headcount: number | null
+  sales: number | null
 }
 
 type Executive = {
   id: number
-  dni: string
-  name: string
-  last_name: string
+  dni: string | null
+  name: string | null
+  last_name: string | null
   membership_id: number | null
   assistant_id: number | null
-  user_type: string
-  email: string
+  user_type: string | null
+  email: string | null
 }
 
 type Assistant = {
   id: number
-  dni: string
-  name: string
-  last_name: string
-  email: string
+  dni: string | null
+  name: string | null
+  last_name: string | null
+  email: string | null
 }
 
 type Membership = {
   id: number
-  name: string
-  membership_type: string
+  name: string | null
+  membership_type: string | null
 }
 
 export default function CompanyDetailsPage() {

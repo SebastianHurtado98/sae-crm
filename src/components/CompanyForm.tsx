@@ -47,7 +47,7 @@ export function CompanyForm({ companyId }: CompanyFormProps) {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [industry, setIndustry] = useState('')
   const [status, setStatus] = useState('')
-  const [enrollmentDate, setEnrollmentDate] = useState('')
+  const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
   const [headcount, setHeadcount] = useState('0')
   const [sales, setSales] = useState('0')
@@ -101,7 +101,7 @@ export function CompanyForm({ companyId }: CompanyFormProps) {
       phone_number: `${ccPhoneNumber} ${phoneNumber}`,
       industry,
       status,
-      enrollment_date: enrollmentDate,
+      enrollment_date: enrollmentDate || null,
       notes,
       headcount: parseInt(headcount),
       sales: parseFloat(sales)
@@ -264,9 +264,9 @@ export function CompanyForm({ companyId }: CompanyFormProps) {
         <Input
           id="enrollmentDate"
           type="date"
-          value={enrollmentDate}
-          onChange={(e) => setEnrollmentDate(e.target.value)}
-          required
+          value={enrollmentDate || ''}
+          onChange={(e) => setEnrollmentDate(e.target.value || null)} 
+          //required
         />
       </div>
       <div>

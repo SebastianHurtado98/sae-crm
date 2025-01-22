@@ -9,20 +9,20 @@ import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react'
 
 type Company = {
   id: number
-  ruc: string
-  razon_social: string
-  nombre_comercial: string
-  seats: number
-  country: string
-  department: string
-  address: string
-  phone_number: string
-  industry: string
-  status: string
-  enrollment_date: string
-  notes: string
-  headcount: number
-  sales: number
+  ruc: string | null
+  razon_social: string | null
+  nombre_comercial: string | null
+  seats: number | null
+  country: string | null
+  department: string | null
+  address: string | null
+  phone_number: string | null
+  industry: string | null
+  status: string | null
+  enrollment_date: string | null
+  notes: string | null
+  headcount: number | null
+  sales: number | null
 }
 
 
@@ -65,7 +65,7 @@ export default function EmpresasPage() {
     }
   }
 
-  const convertDateFormat = (dateString: string) => {
+  const convertDateFormat = (dateString: string | null ) => {
     if (!dateString) return ''
     // Split the date string
     const [year, month, day] = dateString.split('-')
