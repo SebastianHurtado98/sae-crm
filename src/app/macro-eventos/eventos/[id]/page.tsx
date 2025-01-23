@@ -163,7 +163,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
       const { data: guestData, error: guestError } = await supabase
         .from('guest')
-        .select('id')
+        .select('id, name')
         .eq('list_id', selectedListId)
 
       if (guestError) {
@@ -173,7 +173,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         const guestEventEntries = guestData.map(guest => ({
           guest_id: guest.id,
           event_id: event.id,
-          name: "",
+          name: guest.name,
         }));
   
         const { error: guestEventError } = await supabase

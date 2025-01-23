@@ -163,6 +163,7 @@ export function CreateGuestForm({ listId, onComplete }: CreateGuestFormProps) {
                 const selectedExecutive = filteredExecutives.find((executive) => executive.id === parseInt(value))
                 if (selectedExecutive) {
                   setEmail(selectedExecutive.email)
+                  setName(`${selectedExecutive.name} ${selectedExecutive.last_name}`)
                 }
               }}>
               <SelectTrigger>
