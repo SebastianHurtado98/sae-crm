@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EventGuestTable } from '@/components/EventGuestTable'
-import { CreateGuestForm } from '@/components/CreateGuestForm'
+import { CreateEventGuestForm } from '@/components/CreateGuestForm'
 import { ImportUsers } from '@/components/ImportUsers'
 import { ImportExternals } from '@/components/ImportExternals'
 import { UploadZoomAttendance } from '@/components/UploadZoomAttendance'
@@ -173,7 +173,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
               </div>
             </div>
-            {showForm && <CreateGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
+            {showForm && <CreateEventGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
             <EventGuestTable eventId={parseInt(resolvedParams.id)} />
           </div>
         </TabsContent>

@@ -12,6 +12,7 @@ import { ScanQRTab } from '@/components/ScanGuests'
 import { useSearchParams } from 'next/navigation'
 import * as XLSX from 'xlsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CreateEventGuestForm } from '@/components/CreateGuestForm'
 
 type Event = {
   id: number
@@ -29,6 +30,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [hasList, setHasList] = useState<boolean>(false)
   const [eventLists, setEventLists] = useState<{ id: number; name: string }[]>([]);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false)
 
   const searchParams = useSearchParams()
   const defaultTab = searchParams.get('tab') || 'invitados' // Leer el tab de la URL o usar "invitados" por defecto.
@@ -236,9 +238,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex ml-auto space-x-2">
+                <Button onClick={() => setShowForm(!showForm)}>
+                  {showForm ? 'Cerrar formulario' : 'Añadir invitado'}
+                </Button>
                 <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
               </div>
             </div>
+            {showForm && <CreateEventGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
             <EventGuestTable2 eventId={parseInt(resolvedParams.id)} />
           </div> 
           :

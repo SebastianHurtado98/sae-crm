@@ -26,12 +26,13 @@ type CreateGuestFormProps = {
   onComplete: () => void
 }
 
-export function CreateGuestForm({ eventId, onComplete }: CreateGuestFormProps) {
+export function CreateEventGuestForm({ eventId, onComplete }: CreateGuestFormProps) {
   const [isClientCompany, setIsClientCompany] = useState(false)
   const [isUser, setIsUser] = useState(false)
   const [companyId, setCompanyId] = useState<number | null>(null)
   const [companyRazonSocial, setCompanyRazonSocial] = useState('')
   const [executiveId, setExecutiveId] = useState<number | null>(null)
+  const [listId, setListId] = useState<number | null>(null)
   const [name, setName] = useState('')
   const [dni, setDni] = useState('')
   const [email, setEmail] = useState('')
@@ -46,6 +47,7 @@ export function CreateGuestForm({ eventId, onComplete }: CreateGuestFormProps) {
   useEffect(() => {
     fetchCompanies()
     fetchExecutives()
+    fetchListId()
   }, [])
 
   async function fetchCompanies() {
@@ -70,12 +72,24 @@ export function CreateGuestForm({ eventId, onComplete }: CreateGuestFormProps) {
     }
   }
 
+  async function fetchListId() {
+    const { data, error } = await supabase
+      .from('event_list')
+      .select('list_id')
+      .eq('event_id', eventId)
+      .single()
+    if (error) {
+      console.error('Error fetching listId:', error)
+    } else {
+      setListId(data.list_id || null)
+    }
+  }
+
   const filteredExecutives = executives.filter(executive => executive.company_id === companyId)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const guest = {
-      event_id: eventId,
       is_client_company: isClientCompany,
       is_user: isUser,
       company_id: isClientCompany ? companyId : null,
@@ -87,15 +101,34 @@ export function CreateGuestForm({ eventId, onComplete }: CreateGuestFormProps) {
       position,
       tipo_usuario: tipoUsuario,
       tipo_membresia: tipoMembresia,
-      reemplaza_a_nombre: reemplazaANombre,
-      reemplaza_a_correo: reemplazaACorreo,
+      list_id: listId
     }
 
-    const { error } = await supabase
-      .from('event_guest')
+    const { data: dataGuest, error: errorGuest } = await supabase
+      .from('guest')
       .insert([guest])
-    if (error) console.error('Error creating guest:', error)
-    else onComplete()
+      .select()
+      .single()
+
+    if (errorGuest) console.error('Error creating guest:', errorGuest)
+    else {
+      console.log(dataGuest)
+      const eventGuest = {
+        event_id: eventId,
+        guest_id: dataGuest.id,
+        name: "",
+        reemplaza_a_nombre: reemplazaANombre,
+        reemplaza_a_correo: reemplazaACorreo,
+      }
+      const {error: errorEventGuest } = await supabase
+        .from('event_guest')
+        .insert([eventGuest])
+        .select()
+      if (errorEventGuest) console.error('Error creating guest:', errorEventGuest)
+      else{
+        onComplete()
+      }
+    }
   }
 
   return (
