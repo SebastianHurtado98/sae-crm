@@ -71,7 +71,7 @@ export default function EventosNuevo() {
         }
     }
 
-    async function deleteEvent(macroEventId: number) {
+    async function deleteMacroEvent(macroEventId: number) {
         if (!confirm('¿Estás seguro que quieres borrar este evento? Esta acción no se puede deshacer.')) {
           return
         }
@@ -90,6 +90,119 @@ export default function EventosNuevo() {
 
         } catch (error) {
             console.error('Error in deleteEvent:', error)
+        }
+    }
+
+    async function deleteList(listId: number) {
+        if (!confirm('¿Estás seguro que quieres borrar esta lista? Esta acción no se puede deshacer.')) {
+          return
+        }
+        try {
+            await deleteListRelated(listId)
+
+            const { error: deleteListError } = await supabase
+            .from('list')
+            .delete()
+            .eq('id', listId)
+    
+            if (deleteListError) {
+                console.error('Error deleting list:', deleteListError)
+            } else {
+                setFilteredLists(filteredLists.filter((list) => list.id !== listId))
+                alert('Lista eliminada con éxito.')
+            }
+
+        } catch (error) {
+            console.error('Error in deleteList:', error)
+        }
+    }
+
+    async function deleteListRelated(listId: number) {
+        const { data: guestData, error: guestSelectError } = await supabase
+        .from('guest')
+        .select('id')
+        .eq('list_id', listId);
+        if (guestSelectError) {
+            console.error('Error fetching guest IDs:', guestSelectError);
+            return;
+        }
+        if (!guestData || guestData.length === 0) {
+            console.log('No guests found with the specified list_id');
+            return;
+        }
+
+        const guestIds = guestData.map((guest) => guest.id);
+
+        const { error: eventGuestError } = await supabase
+        .from('event_guest')
+        .delete()
+        .in('guest_id', guestIds);        
+        if (eventGuestError) {
+            console.error('Error deleting event_guest:', eventGuestError)
+            return
+        } 
+
+
+        const { error: guestError } = await supabase
+        .from('guest')
+        .delete()
+        .eq('list_id', listId);
+        if (guestError) {
+            console.error('Error deleting guest:', guestError)
+            return
+        }        
+
+        const { error: eventListError } = await supabase
+        .from('event_list')
+        .delete()
+        .eq('list_id', listId);
+        if (eventListError) {
+            console.error('Error deleting guest:', eventListError)
+            return
+        }
+    }
+
+    async function deleteEvent(eventId: number) {
+        if (!confirm('¿Estás seguro que quieres borrar este evento? Esta acción no se puede deshacer.')) {
+          return
+        }
+        try {
+            await deleteEventRelated(eventId);
+
+            const { error: deleteEventError } = await supabase
+            .from('event')
+            .delete()
+            .eq('id', eventId)
+    
+            if (deleteEventError) {
+                console.error('Error deleting event:', deleteEventError)
+            } else {
+                setFilteredEvents(filteredEvents.filter((event) => event.id !== eventId))
+                alert('Evento eliminada con éxito.')
+            }
+
+        } catch (error) {
+            console.error('Error in deleteEvent:', error)
+        }
+    }
+
+    async function deleteEventRelated(eventId: number) {
+        const { error: eventGuestError } = await supabase
+        .from('event_guest')
+        .delete()
+        .eq('event_id', eventId);        
+        if (eventGuestError) {
+            console.error('Error deleting event_guest:', eventGuestError)
+            return
+        }       
+
+        const { error: eventListError } = await supabase
+        .from('event_list')
+        .delete()
+        .eq('event_id', eventId);
+        if (eventListError) {
+            console.error('Error deleting guest:', eventListError)
+            return
         }
     }
 
@@ -147,7 +260,7 @@ export default function EventosNuevo() {
                         variant="outline"
                         size="sm"
                         disabled
-                        onClick={() => deleteEvent(macroEvent.id)}>
+                        onClick={() => deleteMacroEvent(macroEvent.id)}>
                             <Trash2 className="h-4 w-4" />
                             <span className="sr-only">Borrar</span>
                         </Button>
@@ -180,12 +293,22 @@ export default function EventosNuevo() {
                                             {filteredLists.map((list) => (
                                                 <li key={list.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{list.name}</p>
+                                                    <div className="flex space-x-2">
                                                     <Button variant="outline" size="sm" asChild>
                                                     <Link href={`/macro-eventos/listas/${list.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
                                                     </Button>
+
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"                                                        
+                                                        onClick={() => deleteList(list.id)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="sr-only">Borrar</span>
+                                                    </Button>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
@@ -208,12 +331,22 @@ export default function EventosNuevo() {
                                             {filteredEvents.map((event) => (
                                                 <li key={event.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{event.name}</p>
+                                                    <div className="flex space-x-2">
                                                     <Button variant="outline" size="sm" asChild>
                                                     <Link href={`/macro-eventos/eventos/${event.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
                                                     </Button>
+
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"                                                        
+                                                        onClick={() => deleteEvent(event.id)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="sr-only">Borrar</span>
+                                                    </Button>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
