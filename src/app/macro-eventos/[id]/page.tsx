@@ -7,7 +7,7 @@ export default function RedirectMacroEventos() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/eventos-nuevo'); 
+    router.push('/macro-eventos'); 
   }, [router]);
 
   return null; 

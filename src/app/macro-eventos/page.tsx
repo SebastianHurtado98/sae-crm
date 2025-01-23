@@ -114,7 +114,7 @@ export default function EventosNuevo() {
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-bold">Lista de macro eventos</h1>
               <Button asChild>
-                <Link href="/eventos-nuevo/new">
+                <Link href="/macro-eventos/new">
                   <PlusCircle className="mr-2 h-4 w-4" /> Agregar macro evento
                 </Link>
               </Button>
@@ -137,7 +137,7 @@ export default function EventosNuevo() {
                     <TableCell>
                     <div className="flex space-x-2">
                         <Button variant="outline" size="sm" asChild>
-                        <Link href={`/eventos-nuevo/${macroEvent.id}/edit`}>
+                        <Link href={`/macro-eventos/${macroEvent.id}/edit`}>
                             <Pencil className="h-4 w-4" />
                             <span className="sr-only">Editar</span>
                         </Link>
