@@ -89,7 +89,7 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
         .eq('id', eventId)
 
       if (error) console.error('Error updating event:', error)
-      else router.push('/eventos2')
+      else router.push('/macro-eventos')
     } else {
       const { data: newEvent, error } = await supabase
         .from('event')
@@ -130,7 +130,7 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
         }
       }
 
-      router.push('/eventos2')
+      router.push('/macro-eventos')
     }
   }
 

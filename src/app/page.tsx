@@ -57,8 +57,8 @@ const sections = [
     title: 'Eventos',
     description: 'Administra los eventos virtuales y presenciales. Añade asistentes a tus eventos.',
     icon: Lightbulb,
-    viewAllLink: '/eventos-nuevo',
-    addLink: '/eventos-nuevo/new'
+    viewAllLink: '/macro-eventos',
+    addLink: '/macro-eventos/new'
   }
 ]
 

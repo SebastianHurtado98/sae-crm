@@ -90,7 +90,7 @@ export default function EventosPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Lista de eventos</h1>
           <Button asChild>
-            <Link href="/eventos/new">
+            <Link href="/macro-eventos/eventos/new">
               <PlusCircle className="mr-2 h-4 w-4" /> Agregar evento
             </Link>
           </Button>
@@ -106,21 +106,21 @@ export default function EventosPage() {
         </div>
         <div className="mt-4">
         <Button asChild>
-            <Link href="/eventos/reportes">
+            <Link href="/macro-eventos/reportes">
               <Eye className="mr-2 h-4 w-4" /> Ver reportes
             </Link>
         </Button>
           </div>
           <div className="mt-4">
           <Button asChild>
-            <Link href="/eventos/reportes/macro">
+            <Link href="/macro-eventos/reportes/macro">
               <Eye className="mr-2 h-4 w-4" /> Ver registros
             </Link>
         </Button>
         </div>
         <div className="mt-4">
           <Button asChild>
-            <Link href="/eventos/listas">
+            <Link href="/macro-eventos/listas">
               <Eye className="mr-2 h-4 w-4" /> Ver listas consolidadas
             </Link>
         </Button>
@@ -153,19 +153,19 @@ export default function EventosPage() {
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/eventos2/${event.id}`}>
+                      <Link href={`/macro-eventos/eventos/${event.id}`}>
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">Ver</span>
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/eventos2/${event.id}/edit`}>
+                      <Link href={`/macro-eventos/eventos/${event.id}/edit`}>
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/eventos2/new?copyEventId=${event.id}`}>
+                      <Link href={`/macro-eventos/eventos/new?copyEventId=${event.id}`}>
                         <Copy className="h-4 w-4" />
                         <span className="sr-only">Copiar</span>
                       </Link>

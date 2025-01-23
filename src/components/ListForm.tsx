@@ -73,7 +73,7 @@ export function ListForm({ listId, macroEventId: initialMacroEventId }: ListForm
         if (error) {
             console.error('Error updating list:', error);
         } else {
-            router.push('/eventos/listas');
+            router.push('/macro-eventos');
         }
         } else {
         const { error } = await supabase
@@ -83,7 +83,7 @@ export function ListForm({ listId, macroEventId: initialMacroEventId }: ListForm
         if (error) {
             console.error('Error creating list:', error);
         } else {
-            router.push('/eventos/listas');
+            router.push('/macro-eventos');
         }
         }
     }

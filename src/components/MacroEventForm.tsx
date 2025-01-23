@@ -50,7 +50,7 @@ export function MacroEventForm({ macroEventId }: MacroEventFormProps) {
         if (error) {
             console.error('Error updating macro event:', error);
         } else {
-            router.push('/eventos-nuevo');
+            router.push('/macro-eventos');
         }
         } else {
         const { error } = await supabase
@@ -60,7 +60,7 @@ export function MacroEventForm({ macroEventId }: MacroEventFormProps) {
         if (error) {
             console.error('Error creating macro event:', error);
         } else {
-            router.push('/eventos-nuevo');
+            router.push('/macro-eventos');
         }
         }
     }

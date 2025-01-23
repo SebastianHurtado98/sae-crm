@@ -168,7 +168,7 @@ export default function EventosNuevo() {
                                 <h2 className="text-lg font-bold mb-2">Detalles</h2>
                                 <p className="text-md mb-4">{macroEvent.name}</p>
                                 <Button asChild>
-                                    <Link href={`/eventos/reportes?macroReport=${macroEvent.id}`}>
+                                    <Link href={`/macro-eventos/reportes?macroReport=${macroEvent.id}`}>
                                         Ver reporte
                                     </Link>
                                 </Button>
@@ -181,7 +181,7 @@ export default function EventosNuevo() {
                                                 <li key={list.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{list.name}</p>
                                                     <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/eventos/listas/${list.id}`}>
+                                                    <Link href={`/macro-eventos/listas/${list.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
@@ -195,7 +195,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos/listas/new?macroEventId=${macroEvent.id}`}>
+                                        <Link href={`/macro-eventos/listas/new?macroEventId=${macroEvent.id}`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear lista
                                         </Link>
                                     </Button>                                    
@@ -209,7 +209,7 @@ export default function EventosNuevo() {
                                                 <li key={event.id} className="mb-2 flex items-center justify-between border-t border-gray-300 pt-2">
                                                     <p className="text-sm">{event.name}</p>
                                                     <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/eventos2/${event.id}`}>
+                                                    <Link href={`/macro-eventos/eventos/${event.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
                                                     </Link>
@@ -223,7 +223,7 @@ export default function EventosNuevo() {
                                 )}
                                 <div className="flex space-x-2">
                                     <Button asChild>
-                                        <Link href={`/eventos2/new?macroEventId=${macroEvent.id}`}>
+                                        <Link href={`/macro-eventos/eventos/new?macroEventId=${macroEvent.id}`}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Crear evento
                                         </Link>
                                     </Button>

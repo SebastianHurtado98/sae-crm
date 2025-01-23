@@ -37,7 +37,7 @@ export default function EventosPage() {
           <h1 className="text-xl font-bold">Listas de Invitados</h1>
         </div>
         <Button asChild>
-            <Link href="/eventos/listas/new">
+            <Link href="/macro-eventos/listas/new">
               <PlusCircle className="mr-2 h-4 w-4" /> Agregar lista
             </Link>
           </Button>
@@ -56,7 +56,7 @@ export default function EventosPage() {
               <TableCell>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/eventos/listas/${list.id}`}>
+                    <Link href={`/macro-eventos/listas/${list.id}`}>
                       <Eye className="h-4 w-4" />
                       <span className="sr-only">Ver</span>
                     </Link>
