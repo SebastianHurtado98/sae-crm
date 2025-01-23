@@ -52,7 +52,7 @@ export default function EventosNuevo() {
             setMacroEvents(dataMacroEvent || [])
         }
 
-        const { data: dataEvent, error: errorEvent } = await supabase.from('event').select('*')
+        const { data: dataEvent, error: errorEvent } = await supabase.from('event').select('*').order('date_hour', { ascending: true })
 
         if (errorEvent) {
             console.error('Error fetching events:', errorEvent)
