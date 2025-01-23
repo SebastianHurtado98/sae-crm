@@ -243,7 +243,8 @@ export function ImportUsers({ listId }: { listId: number }) {
         email: executive?.email.toLowerCase().trim(),
         is_client_company: true,
         is_user: true,
-        name: ""
+        name: "",
+        tipo_membresia: executive?.membership?.membership_type || 'N/A'
       }
     })
   

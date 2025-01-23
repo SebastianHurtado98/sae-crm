@@ -31,6 +31,7 @@ type Guest = {
     email: string
     office_phone: string
     position: string
+    user_type: string
   }
   tipo_usuario?: string
   tipo_membresia?: string
@@ -58,7 +59,7 @@ export function GuestTable({ listId }: { listId: number }) {
         `
         *,
         company:company_id (razon_social),
-        executive:executive_id (name, last_name, email, office_phone, position)
+        executive:executive_id (name, last_name, email, office_phone, position, user_type)
       `,
         { count: 'exact' }
       )
@@ -189,7 +190,10 @@ export function GuestTable({ listId }: { listId: number }) {
                     : guest.position ?? ''}
                 </TableCell>
                 <TableCell>{guest.email}</TableCell>
-                <TableCell>{guest.tipo_usuario}</TableCell>
+                <TableCell>{guest.is_user 
+                    ? guest.executive?.user_type ?? '' 
+                    : guest.tipo_usuario ?? ''}
+                </TableCell>
                 <TableCell>{guest.tipo_membresia}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
