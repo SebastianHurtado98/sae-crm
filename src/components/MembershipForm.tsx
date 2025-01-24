@@ -36,8 +36,10 @@ const membershipTypes = [
 
 const paymentMethods = [
   "Mensual",
+  "Trimestral",
   "Semestral",
-  "Anual"
+  "Anual",
+  "Contrato abierto",
 ]
 
 export function MembershipForm({ membershipId }: MembershipFormProps) {
