@@ -35,9 +35,14 @@ type Guest = {
   }
   tipo_usuario?: string
   tipo_membresia?: string
+  event_guest?: {
+    id: number
+    assisted: boolean
+    registered: boolean
+  }
 }
 
-export function GuestTable({ listId }: { listId: number }) {
+export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
   const [guests, setGuests] = useState<Guest[]>([])
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -49,10 +54,9 @@ export function GuestTable({ listId }: { listId: number }) {
     fetchGuests()
   }, [searchQuery, currentPage])
 
-
   async function fetchGuests() {
     console.log("Fetching guests");
-  
+
     const { data, error, count } = await supabase
       .from('guest')
       .select(
@@ -66,15 +70,36 @@ export function GuestTable({ listId }: { listId: number }) {
       .eq('list_id', listId)
       .ilike('name', `%${searchQuery}%`)
       .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);
-  
+
     if (error) {
       console.error('Error fetching guests:', error);
       return;
     }
-  
+
     if (data && count !== null) {
-      console.log("Guests", data)
-      // Filtrar invitados únicos por correo
+      let eventGuestMap: Record<string, { id: number; assisted: boolean; registered: boolean }> = {};
+
+      // Si se pasa un eventId, obtener datos de event_guest
+      if (eventId) {
+        const { data: eventGuestData, error: eventGuestError } = await supabase
+          .from('event_guest')
+          .select('id, guest_id, assisted, registered')
+          .eq('event_id', eventId);
+
+        if (eventGuestError) {
+          console.error('Error fetching event_guest:', eventGuestError);
+        } else {
+          // Crear un diccionario con los datos de event_guest
+          eventGuestMap = eventGuestData?.reduce((map, item) => {
+            map[item.guest_id] = {
+              id: item.id,
+              assisted: item.assisted,
+              registered: item.registered,
+            };
+            return map;
+          }, {} as Record<string, { id: number; assisted: boolean; registered: boolean }>);
+        }
+      }
 
       // Ordenar datos
       const sortedData = data.sort((a, b) => {
@@ -86,13 +111,17 @@ export function GuestTable({ listId }: { listId: number }) {
           : b.company_razon_social;
         return (companyNameA || "").localeCompare(companyNameB || "");
       });
-  
-      // Actualizar estado
-      setGuests(sortedData);
+
+      // Agregar datos de event_guest si están disponibles
+      const enrichedGuests = sortedData.map((guest) => ({
+        ...guest,
+        event_guest: eventGuestMap[guest.id] || null,
+      }));
+
+      setGuests(enrichedGuests);
       setTotalPages(Math.ceil(count / itemsPerPage));
     }
   }
-  
 
   async function deleteGuest(guestId: string) {
     const { error } = await supabase
@@ -166,6 +195,8 @@ export function GuestTable({ listId }: { listId: number }) {
             <TableHead>Email</TableHead>
             <TableHead>Tipo de usuario</TableHead>
             <TableHead>Membresía</TableHead>
+            {eventId && <TableHead>Asistió</TableHead>}
+            {eventId && <TableHead>Registrado</TableHead>}
             <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -195,6 +226,8 @@ export function GuestTable({ listId }: { listId: number }) {
                     : guest.tipo_usuario ?? ''}
                 </TableCell>
                 <TableCell>{guest.tipo_membresia}</TableCell>
+                {eventId && <TableCell>{guest.event_guest?.assisted ? 'Sí' : 'No'}</TableCell>}
+                {eventId && <TableCell>{guest.event_guest?.registered ? 'Sí' : 'No'}</TableCell>}
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button 
@@ -235,14 +268,14 @@ export function GuestTable({ listId }: { listId: number }) {
                       <EditGuestForm
                         guestId={parseInt(guest.id)}
                         onComplete={() => {
-                          setEditingGuestId(null); // Asegúrate de que este setState no ocurra durante el render
-                          fetchGuests(); // Solo se ejecuta después del render
+                          setEditingGuestId(null);
+                          fetchGuests();
                         }}
                       />
                       <div className="flex">
                         <Button
                           variant="outline"
-                          onClick={() => setEditingGuestId(null)} // Asegúrate de que esta llamada esté bien definida
+                          onClick={() => setEditingGuestId(null)}
                         >
                           Cancelar
                         </Button>
@@ -259,4 +292,3 @@ export function GuestTable({ listId }: { listId: number }) {
     </div>
   )
 }
-

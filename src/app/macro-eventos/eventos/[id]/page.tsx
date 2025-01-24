@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EventGuestTable2 } from '@/components/EventGuestTable2'
 import { UploadZoomAttendance } from '@/components/UploadZoomAttendance'
 import { EventReportTab } from '@/components/EventReportTab'
 import { ScanQRTab } from '@/components/ScanGuests'
@@ -13,6 +12,7 @@ import { useSearchParams } from 'next/navigation'
 import * as XLSX from 'xlsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CreateEventGuestForm } from '@/components/CreateGuestForm'
+import { GuestTable } from '@/components/macroEvent/EventGuestTable'
 
 type Event = {
   id: number
@@ -31,6 +31,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [eventLists, setEventLists] = useState<{ id: number; name: string }[]>([]);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false)
+  const [eventSetList, setEventSetList] = useState<number | null>(null);
 
   const searchParams = useSearchParams()
   const defaultTab = searchParams.get('tab') || 'invitados' // Leer el tab de la URL o usar "invitados" por defecto.
@@ -67,6 +68,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
       console.error('Error checking event list:', error);
     } else {
       setHasList(!!data);
+      if (data && data.list_id !== null) {
+        setEventSetList(data.list_id);
+      }
     }
   }
 
@@ -186,6 +190,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
       }
       
       setHasList(true)
+      setEventSetList(selectedListId)
     } else {
       console.log('Por favor selecciona una lista primero');
     }
@@ -245,7 +250,12 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
             {showForm && <CreateEventGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
-            <EventGuestTable2 eventId={parseInt(resolvedParams.id)} />
+              {
+                eventSetList ? 
+                <GuestTable listId={eventSetList} eventId={parseInt(resolvedParams.id)} />
+                :
+                <h2>Hubo problemas al recuperar la lista</h2>
+              }
           </div> 
           :
           <div className="space-y-4">
