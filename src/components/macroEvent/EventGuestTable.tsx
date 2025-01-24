@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { EditGuestForm } from '@/components/macroEvent/EditGuestForm'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import QRCode from 'qrcode'
+import JSZip from 'jszip'
 
 type Guest = {
   id: string
@@ -166,6 +168,107 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     </div>
   )
 
+    const handleQRClick = async (guestId: string | null = null) => {  
+      let query = supabase
+        .from('guest')
+        .select(`
+          *,
+          company:company_id (razon_social),
+          executive:executive_id (id, name, last_name, email, office_phone, position)
+        `).eq('list_id', listId)
+      
+      if (guestId) {
+        query = query.eq('id', guestId);
+      }
+      
+      const { data, error } = await query;    
+    
+      if (error) {
+        console.error('Error fetching guests:', error)
+        return
+      }
+      
+      const guestsQR = data ;
+      const zip = new JSZip()
+      const qrPromises = guestsQR.map(async (guest) => {
+        const guestName = guest.is_user
+          ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
+          : guest.name
+  
+        const qrData = guest.is_user 
+          ? `I-${guest.executive.id}`
+          : `E-${guest.id}`  
+  
+        const guestCompany = guest.is_user 
+          ? guest.company.razon_social
+          : guest.company_razon_social  
+  
+        try {
+          
+          const qrCodeUrl = await QRCode.toDataURL(qrData)
+    
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            throw new Error('No se pudo obtener el contexto 2D del canvas');
+          }
+  
+          const qrImage = new Image();
+  
+          qrImage.src = qrCodeUrl;
+  
+          await new Promise<void>((resolve) => {
+            qrImage.onload = () => {
+              const qrSize = 500; 
+              const textHeight = 60; 
+              const canvasWidth = qrSize;
+              const canvasHeight = qrSize + textHeight;
+  
+              canvas.width = canvasWidth;
+              canvas.height = canvasHeight;
+  
+              ctx.drawImage(qrImage, 0, 0, qrSize, qrSize);
+  
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, qrSize, canvasWidth, textHeight);
+              
+              ctx.font = '16px Arial';
+              ctx.textAlign = 'center';
+              ctx.fillStyle = 'black';
+  
+              ctx.fillText(guestName, canvasWidth / 2, qrSize + 20);
+              ctx.fillText(guestCompany, canvasWidth / 2, qrSize + 40);
+  
+              resolve();
+            };
+          });
+  
+          const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+    
+          if (!blob) {
+            throw new Error(`No se pudo generar el blob para ${guestName}`);
+          }
+          
+          zip.file(`${guestName}-QR-${guest.id}.png`, blob)
+    
+          
+        } catch (error) {
+          console.error(`Error generando QR para ${guestName}:`, error)
+        }
+      })
+        
+      await Promise.all(qrPromises)    
+      
+      zip.generateAsync({ type: 'blob' }).then((content) => {
+        
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(content)
+        link.download = 'codigos_qr.zip' 
+        link.click() 
+        console.log('Archivo ZIP descargado')
+      })
+    }
+
   return (
     <div>
       <div className="mb-8">
@@ -185,6 +288,9 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           />
         </div>
       </div>
+      <Button onClick={() => handleQRClick()}>
+        Generar Códigos QR
+      </Button>
       <PaginationControls />
       <Table>
         <TableHeader>
@@ -230,6 +336,16 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                 {eventId && <TableCell>{guest.event_guest?.registered ? 'Sí' : 'No'}</TableCell>}
                 <TableCell>
                   <div className="flex space-x-2">
+                  <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => window.open(`https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`, '_blank')}
+                    >
+                      🔗
+                    </Button>
+                    <Button onClick={() => handleQRClick(guest.id)}>
+                      QR
+                    </Button>
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -267,6 +383,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                     <div className="space-y-4">
                       <EditGuestForm
                         guestId={parseInt(guest.id)}
+                        eventId={eventId}
                         onComplete={() => {
                           setEditingGuestId(null);
                           fetchGuests();
