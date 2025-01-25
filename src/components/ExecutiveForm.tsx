@@ -105,7 +105,7 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
   const [executives, setExecutives] = useState<Executive[]>([])
   const [loading, setLoading] = useState(true)
   const [membershipId, setMembershipId] = useState('')
-  const [memberships, setMemberships] = useState<{ id: number; name: string; company_id: number }[]>([])
+  const [memberships, setMemberships] = useState<{ id: number; name: string; company_id: number, membership_type: string }[]>([])
   const [saeMeetings, setSaeMeetings] = useState<string[]>([])
 
   const router = useRouter()
@@ -126,13 +126,15 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
   const fetchMemberships = useCallback(async (companyId: number) => {
     const { data, error } = await supabase
       .from('membership')
-      .select('id, name, company_id')
+      .select('id, name, company_id, membership_type')
       .eq('company_id', companyId)
 
     if (error) {
       console.error('Error fetching memberships:', error)
     } else {
       setMemberships(data || [])
+      console.log('Memberships:', data)
+      console.log(data);
     }
   }, [])
 
@@ -323,7 +325,7 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
           <SelectContent>
             {memberships.map((membership) => (
               <SelectItem key={membership.id} value={membership.id.toString()}>
-                {membership.name}
+                {membership.membership_type}
               </SelectItem>
             ))}
           </SelectContent>
