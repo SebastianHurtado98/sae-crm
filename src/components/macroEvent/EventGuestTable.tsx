@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
 
+/*
 type Guest = {
   id: string
   list_id: number
@@ -34,6 +35,11 @@ type Guest = {
     office_phone: string
     position: string
     user_type: string
+    end_date: string
+    membership_id: number | null
+    membership?: {
+      membership_type: string
+    }
   }
   tipo_usuario?: string
   tipo_membresia?: string
@@ -43,9 +49,24 @@ type Guest = {
     registered: boolean
   }
 }
+  */
+
+type ConsolidatedGuest = {
+  id: string
+  name: string
+  company: string
+  position: string
+  email: string
+  tipo_usuario: string
+  tipo_membresia: string
+  end_date: string
+  assisted?: boolean
+  registered?: boolean
+}
 
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
-  const [guests, setGuests] = useState<Guest[]>([])
+  const [guests, setGuests] = useState<ConsolidatedGuest[]>([])
+  const [visibleGuests, setVisibleGuests] = useState<ConsolidatedGuest[]>([])
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -53,8 +74,30 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const itemsPerPage = 100
 
   useEffect(() => {
+    console.log("Fetching guests")
     fetchGuests()
-  }, [searchQuery, currentPage])
+  }, [])
+
+  useEffect(() => {
+    const filteredGuests = searchQuery
+    ? guests.filter((guest) => {
+        const lowerQuery = searchQuery.toLowerCase();
+        const nameMatch = guest.name.toLowerCase().includes(lowerQuery);
+        const companyMatch = guest.company.toLowerCase().includes(lowerQuery);
+        return nameMatch || companyMatch;
+      })
+    : guests;
+  
+    const paginatedGuests = filteredGuests.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+    const sortedData = paginatedGuests.sort((a, b) => {
+      return (a.company || "").localeCompare(b.company || "");
+    });
+    setVisibleGuests(sortedData);
+    setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage));
+  }, [searchQuery, currentPage, guests])
 
   async function fetchGuests() {
     console.log("Fetching guests");
@@ -65,13 +108,20 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         `
         *,
         company:company_id (razon_social),
-        executive:executive_id (name, last_name, email, office_phone, position, user_type)
+        executive:executive_id (
+        name,
+        last_name,
+        email,
+        position,
+        end_date,
+        user_type,
+        membership_id,
+        membership:membership_id (membership_type)
+      )
       `,
         { count: 'exact' }
       )
       .eq('list_id', listId)
-      .ilike('name', `%${searchQuery}%`)
-      .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1);
 
     if (error) {
       console.error('Error fetching guests:', error);
@@ -103,19 +153,30 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         }
       }
 
-      // Ordenar datos
-      const sortedData = data.sort((a, b) => {
-        const companyNameA = a.is_client_company
-          ? a.company?.razon_social
-          : a.company_razon_social;
-        const companyNameB = b.is_client_company
-          ? b.company?.razon_social
-          : b.company_razon_social;
-        return (companyNameA || "").localeCompare(companyNameB || "");
-      });
+      const consolidatedGuests: ConsolidatedGuest[] = data.map((guest) => ({
+        id: guest.id,
+        name: guest.is_user
+          ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
+          : guest.name,
+        company: guest.is_client_company
+          ? guest.company?.razon_social
+          : guest.company_razon_social,
+        position: guest.is_user
+          ? guest.executive?.position ?? ''
+          : guest.position ?? '',
+        email: guest.email,
+        tipo_usuario: guest.is_user
+          ? guest.executive?.user_type ?? ''
+          : guest.tipo_usuario ?? '',
+        tipo_membresia: guest.is_user ? guest.executive?.membership?.membership_type ?? '' : guest.tipo_membresia ?? '',
+        end_date: guest.executive?.end_date ?? '',
+        assisted: eventGuestMap[guest.id]?.assisted,
+        registered: eventGuestMap[guest.id]?.registered,
+      }));
+
 
       // Agregar datos de event_guest si están disponibles
-      const enrichedGuests = sortedData.map((guest) => ({
+      const enrichedGuests = consolidatedGuests.map((guest) => ({
         ...guest,
         event_guest: eventGuestMap[guest.id] || null,
       }));
@@ -301,39 +362,32 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
             <TableHead>Email</TableHead>
             <TableHead>Tipo de usuario</TableHead>
             <TableHead>Membresía</TableHead>
+            <TableHead>Fecha de fin</TableHead>
             {eventId && <TableHead>Asistió</TableHead>}
             {eventId && <TableHead>Registrado</TableHead>}
             <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {guests.map((guest) => (
+          {visibleGuests.map((guest) => (
             <>
               <TableRow key={guest.id}>
                 <TableCell>
-                  {guest.is_user 
-                    ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
-                    : guest.name
-                  }
+                  {guest.name}
                 </TableCell>
                 <TableCell>
-                  {guest.is_client_company
-                    ? guest.company?.razon_social
-                    : guest.company_razon_social}
+                  {guest.company}
                 </TableCell>
                 <TableCell>
-                  {guest.is_user 
-                    ? guest.executive?.position ?? '' 
-                    : guest.position ?? ''}
+                  {guest.position}
                 </TableCell>
                 <TableCell>{guest.email}</TableCell>
-                <TableCell>{guest.is_user 
-                    ? guest.executive?.user_type ?? '' 
-                    : guest.tipo_usuario ?? ''}
+                <TableCell>{guest.tipo_usuario}
                 </TableCell>
                 <TableCell>{guest.tipo_membresia}</TableCell>
-                {eventId && <TableCell>{guest.event_guest?.assisted ? 'Sí' : 'No'}</TableCell>}
-                {eventId && <TableCell>{guest.event_guest?.registered ? 'Sí' : 'No'}</TableCell>}
+                <TableCell>{guest.end_date}</TableCell>
+                {eventId && <TableCell>{guest.assisted ? 'Sí' : 'No'}</TableCell>}
+                {eventId && <TableCell>{guest.registered ? 'Sí' : 'No'}</TableCell>}
                 <TableCell>
                   <div className="flex space-x-2">
                   <Button 
