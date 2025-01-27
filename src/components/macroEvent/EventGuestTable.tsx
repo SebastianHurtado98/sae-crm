@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectTrigger,
@@ -18,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
+import { EmailConfirmationModal } from '../EmailModal'
 
 /*
 type Guest = {
@@ -83,6 +85,9 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [filterAssisted, setFilterAssisted] = useState<'todos' | 'si' | 'no'>('todos');
   const [filterDateFrom, setFilterDateFrom] = useState<string | null>(null);
   const [filterDateTo, setFilterDateTo] = useState<string | null>(null);
+  const [selectedGuests, setSelectedGuests] = useState<string[]>([])
+  const [selectAll, setSelectAll] = useState(false)
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 
   const itemsPerPage = 100
 
@@ -420,6 +425,33 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       })
     }
 
+  const handleGuestSelect = (guestId: string) => {
+      setSelectedGuests(prev => 
+        prev.includes(guestId)
+          ? prev.filter(id => id !== guestId)
+          : [...prev, guestId]
+      )
+  }
+  
+  const handleSelectAll = () => {
+      const visibleIds = visibleGuests.map(guest => guest.id);
+    
+      if (selectAll) {
+
+        setSelectedGuests(prev => prev.filter(id => !visibleIds.includes(id)));
+      } else {
+
+        setSelectedGuests(prev => [...new Set([...prev, ...visibleIds])]);
+      }
+      
+      setSelectAll(!selectAll);
+  };
+
+  const handleEmailConfirmation = (emailType: string) => {
+    console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
+    
+  }
+
   return (
     <div>
       <div className="mb-8">
@@ -504,17 +536,22 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         </div>
       </div>
 
+      <Button className="mt-4" onClick={() => setIsEmailModalOpen(true)}>
+        Enviar {selectedGuests.length} Correos
+      </Button>
       <PaginationControls />
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[50px]">
+              <Checkbox checked={visibleGuests.every(guest => selectedGuests.includes(guest.id))} onCheckedChange={handleSelectAll} />
+            </TableHead>
             <TableHead>Nombre</TableHead>
             <TableHead>Empresa</TableHead>
             <TableHead>Cargo</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Tipo de usuario</TableHead>
-            <TableHead>Membresía</TableHead>
-            <TableHead>Fecha de fin</TableHead>
+            <TableHead>Estado Correo</TableHead>
             <TableHead>Asistió</TableHead>
             <TableHead>Registrado</TableHead>
             <TableHead>Acciones</TableHead>
@@ -524,6 +561,12 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           {visibleGuests.map((guest) => (
             <>
               <TableRow key={guest.id}>
+              <TableCell>
+                <Checkbox
+                  checked={selectedGuests.includes(guest.id)}
+                  onCheckedChange={() => handleGuestSelect(guest.id)}
+                />
+              </TableCell>
                 <TableCell>
                   {guest.name}
                 </TableCell>
@@ -536,8 +579,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                 <TableCell>{guest.email}</TableCell>
                 <TableCell>{guest.tipo_usuario}
                 </TableCell>
-                <TableCell>{guest.tipo_membresia}</TableCell>
-                <TableCell>{guest.end_date}</TableCell>
+                <TableCell>Registro Enviado</TableCell>
                 <TableCell>{guest.assisted ? 'Sí' : 'No'}</TableCell>
                 <TableCell>{guest.registered ? 'Sí' : 'No'}</TableCell>
                 <TableCell>
@@ -612,6 +654,12 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         </TableBody>
       </Table>
       <PaginationControls />
+      <EmailConfirmationModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        onConfirm={handleEmailConfirmation}
+        guestCount={selectedGuests.length}
+      />
     </div>
   )
 }
