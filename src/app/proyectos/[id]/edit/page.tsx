@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 
 export default function EditProjectPage() {
   const params = useParams()
-  const projectId = typeof params.id === 'string' ? parseInt(params.id) : undefined
+  const projectId = typeof params?.id === 'string' ? parseInt(params.id) : undefined
 
   return (
     <div className="container mx-auto py-10">

@@ -33,7 +33,7 @@ export default function QueryDetailsPage() {
   const params = useParams()
 
   const fetchQuery = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('query')
       .select(`
@@ -49,7 +49,7 @@ export default function QueryDetailsPage() {
     } else {
       setQuery(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchQuery()

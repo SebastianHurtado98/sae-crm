@@ -9,7 +9,7 @@ export default function EditExecutivePage() {
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">Editar usuario</h1>
-      <ExecutiveForm executiveId={parseInt(params.id as string)} />
+      <ExecutiveForm executiveId={parseInt(params?.id as string)} />
     </div>
   )
 }

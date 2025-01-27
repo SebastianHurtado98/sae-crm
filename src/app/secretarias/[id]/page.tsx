@@ -30,7 +30,7 @@ export default function AssistantDetailsPage() {
   const params = useParams()
 
   const fetchAssistant = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('assistant')
       .select(`
@@ -45,7 +45,7 @@ export default function AssistantDetailsPage() {
     } else {
       setAssistant(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchAssistant()

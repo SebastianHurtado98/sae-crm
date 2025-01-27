@@ -465,7 +465,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const handleEmailConfirmation = async (emailType: string) => {
     console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
     
-    const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
+    //const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
 
     for (const guest of testSelectedGuestsData) {
       const emailData = {

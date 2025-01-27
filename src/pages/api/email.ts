@@ -17,18 +17,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { to, template_id, first_name, register_link }: EmailData = req.body
   
-    const msg = {
+    const msg: sgMail.MailDataRequired = {
         personalizations: [
             {
               to: [{ email: to }],
-              dynamic_template_data: {
+              dynamicTemplateData: {
                 first_name: first_name,
                 register_link: register_link,
               },
             },
           ],
         from: "contactasae@apoyoconsultoria.com",
-        template_id: template_id       
+        templateId: template_id       
     }
   
     try {

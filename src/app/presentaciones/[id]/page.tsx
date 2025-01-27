@@ -41,7 +41,7 @@ export default function PresentationDetailsPage() {
   const params = useParams()
 
   const fetchPresentation = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('presentation')
       .select(`
@@ -57,7 +57,7 @@ export default function PresentationDetailsPage() {
     } else {
       setPresentation(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchPresentation()

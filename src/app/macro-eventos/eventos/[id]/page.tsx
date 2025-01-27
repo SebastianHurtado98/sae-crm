@@ -34,7 +34,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [eventSetList, setEventSetList] = useState<number | null>(null);
 
   const searchParams = useSearchParams()
-  const defaultTab = searchParams.get('tab') || 'invitados' // Leer el tab de la URL o usar "invitados" por defecto.
+  const defaultTab = searchParams?.get('tab') || 'invitados' 
 
   useEffect(() => {
     fetchEvent()

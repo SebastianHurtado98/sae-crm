@@ -8,8 +8,8 @@ interface SearchParamsHandlerProps {
 
 export function SearchParamsHandler({ children }: SearchParamsHandlerProps) {
   const searchParams = useSearchParams()
-  const copyEventId = searchParams.get('copyEventId')
-  const macroEventId = searchParams.get('macroEventId');
+  const copyEventId = searchParams?.get('copyEventId')
+  const macroEventId = searchParams?.get('macroEventId');
 
   return <>{children(copyEventId ? Number(copyEventId) : undefined, macroEventId ? String(macroEventId) : undefined)}</>
 }

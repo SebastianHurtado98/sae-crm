@@ -36,7 +36,7 @@ export default function ProjectDetailsPage() {
   const params = useParams()
 
   const fetchProject = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('project')
       .select(`
@@ -52,7 +52,7 @@ export default function ProjectDetailsPage() {
     } else {
       setProject(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchProject()

@@ -54,7 +54,7 @@ export default function MembershipDetailsPage() {
   const params = useParams()
 
   const fetchMembership = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('membership')
       .select(`
@@ -69,7 +69,7 @@ export default function MembershipDetailsPage() {
     } else {
       setMembership(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchMembership()

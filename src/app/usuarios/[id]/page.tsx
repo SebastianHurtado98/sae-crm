@@ -60,7 +60,7 @@ export default function ExecutiveDetailsPage() {
   const params = useParams()
 
   const fetchExecutive = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('executive')
       .select(`
@@ -86,7 +86,7 @@ export default function ExecutiveDetailsPage() {
     } else {
       setExecutive(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchExecutive()

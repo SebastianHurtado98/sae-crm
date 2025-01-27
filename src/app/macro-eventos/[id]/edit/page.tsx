@@ -5,7 +5,7 @@ import { MacroEventForm } from '@/components/MacroEventForm'
 
 export default function EditMacroEventPage() {
   const params = useParams()
-  const macroEventId = typeof params.id === 'string' ? parseInt(params.id) : undefined
+  const macroEventId = typeof params?.id === 'string' ? parseInt(params.id) : undefined
 
   return (
     <div className="container mx-auto py-10">

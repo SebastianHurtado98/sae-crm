@@ -5,7 +5,7 @@ import { MembershipForm } from '@/components/MembershipForm'
 
 export default function EditMembershipPage() {
   const params = useParams()
-  const membershipId = typeof params.id === 'string' ? parseInt(params.id) : undefined
+  const membershipId = typeof params?.id === 'string' ? parseInt(params.id) : undefined
 
   return (
     <div className="container mx-auto py-10">

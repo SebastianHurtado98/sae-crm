@@ -61,7 +61,7 @@ export default function CompanyDetailsPage() {
   const params = useParams()
 
   const fetchCompany = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('company')
       .select('*')
@@ -73,10 +73,10 @@ export default function CompanyDetailsPage() {
     } else {
       setCompany(data)
     }
-  }, [params.id])
+  }, [params?.id])
 
   const fetchExecutives = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('executive')
       .select('id, dni, name, last_name, membership_id, assistant_id, user_type, email')
@@ -87,10 +87,10 @@ export default function CompanyDetailsPage() {
     } else {
       setExecutives(data || [])
     }
-  }, [params.id])
+  }, [params?.id])
 
   const fetchAssistants = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('assistant')
       .select('id, dni, name, last_name, email')
@@ -101,10 +101,10 @@ export default function CompanyDetailsPage() {
     } else {
       setAssistants(data || [])
     }
-  }, [params.id])
+  }, [params?.id])
 
   const fetchMemberships = useCallback(async () => {
-    if (typeof params.id !== 'string') return
+    if (typeof params?.id !== 'string') return
     const { data, error } = await supabase
       .from('membership')
       .select('id, name, membership_type')
@@ -116,7 +116,7 @@ export default function CompanyDetailsPage() {
       console.log(data);
       setMemberships(data || [])
     }
-  }, [params.id])
+  }, [params?.id])
 
   useEffect(() => {
     fetchCompany()

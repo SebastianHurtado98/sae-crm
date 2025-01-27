@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 
 function ListPageContent() {
   const searchParams = useSearchParams();
-  const macroEventId = searchParams.get('macroEventId') || '';
+  const macroEventId = searchParams?.get('macroEventId') || '';
 
   return <ListForm macroEventId={macroEventId} />;
 }
