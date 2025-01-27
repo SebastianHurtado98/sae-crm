@@ -49,6 +49,7 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
       setDateHour(data.date_hour)
       setPlace(data.place)
       setRegisterOpen(data.register_open)
+      setMacroEventId(data.macro_event_id?.toString() || '')
     }
   }, [eventId])
 

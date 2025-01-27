@@ -301,6 +301,13 @@ export default function EventosNuevo() {
                                                     </Link>
                                                     </Button>
 
+                                                    <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/macro-eventos/listas/${list.id}/edit`}>
+                                                        <Pencil className="h-4 w-4" />
+                                                        <span className="sr-only">Editar</span>
+                                                    </Link>
+                                                    </Button>
+
                                                     <Button
                                                         variant="outline"
                                                         size="sm"                                                        
@@ -336,6 +343,13 @@ export default function EventosNuevo() {
                                                     <Link href={`/macro-eventos/eventos/${event.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                         <span className="sr-only">Ver</span>
+                                                    </Link>
+                                                    </Button>
+
+                                                    <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/macro-eventos/eventos/${event.id}/edit`}>
+                                                        <Pencil className="h-4 w-4" />
+                                                        <span className="sr-only">Editar</span>
                                                     </Link>
                                                     </Button>
 

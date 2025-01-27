@@ -48,6 +48,7 @@ export function ListForm({ listId, macroEventId: initialMacroEventId }: ListForm
         console.error('Error fetching list:', error)
         } else if (data) {
         setName(data.name)
+        setMacroEventId(data.macro_event_id?.toString() || '')
         }
     }, [listId])
 
