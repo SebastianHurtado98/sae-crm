@@ -110,6 +110,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
             return nameMatch || companyMatch;
           })
         : guests;
+      console.log("filteredGuests", filteredGuests)
     }
       // Filtro por registrado
       if (filterRegistered !== 'todos') {
@@ -245,7 +246,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       const consolidatedGuests: ConsolidatedGuest[] = data.map((guest) => ({
         id: guest.id,
         name: guest.is_user
-          ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
+          ? `${guest.executive?.name?.trim()} ${guest.executive?.last_name?.trim() || ''}`.trim()
           : guest.name ?? '',
         company: guest.is_client_company
           ? guest.company?.razon_social ?? ''
