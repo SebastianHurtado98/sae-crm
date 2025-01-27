@@ -5,6 +5,14 @@ import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select"
+
 import { EditGuestForm } from '@/components/macroEvent/EditGuestForm'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -60,8 +68,8 @@ type ConsolidatedGuest = {
   tipo_usuario: string
   tipo_membresia: string
   end_date: string
-  assisted?: boolean
-  registered?: boolean
+  assisted: boolean
+  registered: boolean
 }
 
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
@@ -71,22 +79,57 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [filterRegistered, setFilterRegistered] = useState<'todos' | 'si' | 'no'>('todos');
+  const [filterAssisted, setFilterAssisted] = useState<'todos' | 'si' | 'no'>('todos');
+  const [filterDateFrom, setFilterDateFrom] = useState<string | null>(null);
+  const [filterDateTo, setFilterDateTo] = useState<string | null>(null);
+
   const itemsPerPage = 100
 
   useEffect(() => {
     console.log("Fetching guests")
     fetchGuests()
+    console.log("Guests fetched", guests)
   }, [])
 
   useEffect(() => {
-    const filteredGuests = searchQuery
-    ? guests.filter((guest) => {
-        const lowerQuery = searchQuery.toLowerCase();
-        const nameMatch = guest.name.toLowerCase().includes(lowerQuery);
-        const companyMatch = guest.company.toLowerCase().includes(lowerQuery);
-        return nameMatch || companyMatch;
-      })
-    : guests;
+    let filteredGuests = guests;
+
+    if (searchQuery) {
+      filteredGuests = searchQuery
+      ? guests.filter((guest) => {
+          const lowerQuery = searchQuery.toLowerCase();
+          const nameMatch = guest.name.toLowerCase().includes(lowerQuery);
+          const companyMatch = guest.company.toLowerCase().includes(lowerQuery);
+          return nameMatch || companyMatch;
+        })
+      : guests;
+    }
+
+      // Filtro por registrado
+      if (filterRegistered !== 'todos') {
+        const isRegistered = filterRegistered === 'si';
+        filteredGuests = filteredGuests.filter((guest) => guest.registered === isRegistered);
+      }
+
+      // Filtro por asistió
+      if (filterAssisted !== 'todos') {
+        const isAssisted = filterAssisted === 'si';
+        filteredGuests = filteredGuests.filter((guest) => guest.assisted === isAssisted);
+      }
+
+      // Filtro por rango de fecha
+      if (filterDateFrom) {
+        filteredGuests = filteredGuests.filter(
+          (guest) => new Date(guest.end_date) >= new Date(filterDateFrom)
+        );
+      }
+
+      if (filterDateTo) {
+        filteredGuests = filteredGuests.filter(
+          (guest) => new Date(guest.end_date) <= new Date(filterDateTo)
+        );
+      }
   
     const paginatedGuests = filteredGuests.slice(
       (currentPage - 1) * itemsPerPage,
@@ -97,7 +140,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     });
     setVisibleGuests(sortedData);
     setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage));
-  }, [searchQuery, currentPage, guests])
+  }, [searchQuery, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests])
 
   async function fetchGuests() {
     console.log("Fetching guests");
@@ -145,11 +188,52 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           eventGuestMap = eventGuestData?.reduce((map, item) => {
             map[item.guest_id] = {
               id: item.id,
-              assisted: item.assisted,
-              registered: item.registered,
+              assisted: item.assisted || false,
+              registered: item.registered || false,
             };
             return map;
           }, {} as Record<string, { id: number; assisted: boolean; registered: boolean }>);
+        }
+      } else {
+        const { data: eventIds, error: eventsInListError } = await supabase
+          .from('event_list')
+          .select('event_id')
+          .eq('list_id', listId);
+        
+        const eventIdsList = eventIds?.map((event) => event.event_id) || [];
+
+        if (eventsInListError) {
+          console.error('Error fetching events in list:', eventsInListError);
+        } else {
+          console.log("eventIds", eventIdsList);
+          if (eventIdsList.length > 0) {
+            const { data: eventGuestData, error: eventGuestError } = await supabase
+              .from('event_guest')
+              .select('id, guest_id, assisted, registered')
+              .in('event_id', eventIdsList);
+
+            console.log("events", eventGuestData);
+            if (eventGuestError) {
+              console.error('Error fetching event_guest:', eventGuestError);
+            } else {
+              // Crear un diccionario con los datos de event_guest
+              eventGuestMap = eventGuestData?.reduce((map, item) => {
+                // Si el guest_id ya existe en el mapa, hacemos un "OR" con los valores actuales
+                if (map[item.guest_id]) {
+                  map[item.guest_id].assisted = map[item.guest_id].assisted || item.assisted || false;
+                  map[item.guest_id].registered = map[item.guest_id].registered || item.registered || false;
+                } else {
+                  // Si no existe en el mapa, lo inicializamos con los valores actuales
+                  map[item.guest_id] = {
+                    id: item.id,
+                    assisted: item.assisted || false,
+                    registered: item.registered || false,
+                  };
+                }
+                return map;
+              }, {} as Record<string, { id: number; assisted: boolean; registered: boolean }>); // Diccionario inicial vacío
+            }
+          }          
         }
       }
 
@@ -170,8 +254,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           : guest.tipo_usuario ?? '',
         tipo_membresia: guest.is_user ? guest.executive?.membership?.membership_type ?? '' : guest.tipo_membresia ?? '',
         end_date: guest.executive?.end_date ?? '',
-        assisted: eventGuestMap[guest.id]?.assisted,
-        registered: eventGuestMap[guest.id]?.registered,
+        assisted: eventGuestMap[guest.id]?.assisted ?? false,
+        registered: eventGuestMap[guest.id]?.registered ?? false,
       }));
 
 
@@ -349,9 +433,71 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           />
         </div>
       </div>
+      <div className="flex items-center justify-between mb-6">
       <Button onClick={() => handleQRClick()}>
-        Generar Códigos QR
+      Generar Códigos QR
       </Button>
+      <div className="flex flex-wrap items-end gap-4">
+      {/* Filtro Registrado */}
+      <div className="w-full sm:w-auto">
+        <label className="block text-sm font-medium text-gray-700">Registrado</label>
+        <Select
+          onValueChange={(value) => setFilterRegistered(value as 'todos' | 'si' | 'no')}
+          value={filterRegistered}
+        >
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="si">Sí</SelectItem>
+                <SelectItem value="no">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtro Asistió */}
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700">Asistió</label>
+            <Select
+              onValueChange={(value) => setFilterAssisted(value as 'todos' | 'si' | 'no')}
+              value={filterAssisted}
+            >
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="si">Sí</SelectItem>
+                <SelectItem value="no">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtro Fecha Desde */}
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700">Fecha Desde</label>
+            <Input
+              type="date"
+              value={filterDateFrom || ''}
+              onChange={(e) => setFilterDateFrom(e.target.value || null)}
+              className="w-full sm:w-40"
+            />
+          </div>
+
+          {/* Filtro Fecha Hasta */}
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700">Fecha Hasta</label>
+            <Input
+              type="date"
+              value={filterDateTo || ''}
+              onChange={(e) => setFilterDateTo(e.target.value || null)}
+              className="w-full sm:w-40"
+            />
+          </div>
+        </div>
+      </div>
+
       <PaginationControls />
       <Table>
         <TableHeader>
@@ -363,8 +509,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
             <TableHead>Tipo de usuario</TableHead>
             <TableHead>Membresía</TableHead>
             <TableHead>Fecha de fin</TableHead>
-            {eventId && <TableHead>Asistió</TableHead>}
-            {eventId && <TableHead>Registrado</TableHead>}
+            <TableHead>Asistió</TableHead>
+            <TableHead>Registrado</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -386,8 +532,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                 </TableCell>
                 <TableCell>{guest.tipo_membresia}</TableCell>
                 <TableCell>{guest.end_date}</TableCell>
-                {eventId && <TableCell>{guest.assisted ? 'Sí' : 'No'}</TableCell>}
-                {eventId && <TableCell>{guest.registered ? 'Sí' : 'No'}</TableCell>}
+                <TableCell>{guest.assisted ? 'Sí' : 'No'}</TableCell>
+                <TableCell>{guest.registered ? 'Sí' : 'No'}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                   <Button 
