@@ -97,15 +97,20 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
 
     if (searchQuery) {
       filteredGuests = searchQuery
-      ? guests.filter((guest) => {
-          const lowerQuery = searchQuery.toLowerCase();
-          const nameMatch = guest.name.toLowerCase().includes(lowerQuery);
-          const companyMatch = guest.company.toLowerCase().includes(lowerQuery);
-          return nameMatch || companyMatch;
-        })
-      : guests;
+        ? guests.filter((guest) => {
+            const normalizeString = (str: string) =>
+              str
+                .normalize('NFD') // Descompone caracteres acentuados en su forma básica
+                .replace(/[\u0300-\u036f]/g, '') // Elimina los diacríticos (tildes)
+    
+            const lowerQuery = normalizeString(searchQuery.toLowerCase());
+            const nameMatch = normalizeString(guest.name.toLowerCase()).includes(lowerQuery);
+            const companyMatch = normalizeString(guest.company.toLowerCase()).includes(lowerQuery);
+    
+            return nameMatch || companyMatch;
+          })
+        : guests;
     }
-
       // Filtro por registrado
       if (filterRegistered !== 'todos') {
         const isRegistered = filterRegistered === 'si';
@@ -241,14 +246,14 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         id: guest.id,
         name: guest.is_user
           ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
-          : guest.name,
+          : guest.name ?? '',
         company: guest.is_client_company
-          ? guest.company?.razon_social
-          : guest.company_razon_social,
+          ? guest.company?.razon_social ?? ''
+          : guest.company_razon_social ?? '',
         position: guest.is_user
           ? guest.executive?.position ?? ''
           : guest.position ?? '',
-        email: guest.email,
+        email: guest.email ?? '',
         tipo_usuario: guest.is_user
           ? guest.executive?.user_type ?? ''
           : guest.tipo_usuario ?? '',
