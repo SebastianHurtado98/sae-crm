@@ -74,6 +74,21 @@ type ConsolidatedGuest = {
   registered: boolean
 }
 
+const testSelectedGuestsData = [
+  {
+    name: "Gabriel",
+    email: "gabriel_vidal_m@hotmail.com"
+  },
+  {
+    name: "Sebastian",
+    email: "shurtado100998@gmail.com"
+  },
+  {
+    name: "Yien",
+    email: "yyi@apoyoconsultoria.com"
+  }
+]
+
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
   const [guests, setGuests] = useState<ConsolidatedGuest[]>([])
   const [visibleGuests, setVisibleGuests] = useState<ConsolidatedGuest[]>([])
@@ -447,9 +462,38 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       setSelectAll(!selectAll);
   };
 
-  const handleEmailConfirmation = (emailType: string) => {
+  const handleEmailConfirmation = async (emailType: string) => {
     console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
     
+    const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
+
+    for (const guest of testSelectedGuestsData) {
+      const emailData = {
+        to: guest.email,
+        template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",        
+        first_name: guest.name,
+        register_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`        
+      }
+
+      try {
+        const response = await fetch("/api/email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(emailData),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to send email")
+        }
+
+      } catch (error) {
+        console.error(`Error sending email to guest.email:`, error)
+      }
+    }
+
+    setIsEmailModalOpen(false)
   }
 
   return (
