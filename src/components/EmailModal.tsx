@@ -33,7 +33,8 @@ export function EmailConfirmationModal({ isOpen, onClose, onConfirm, guestCount 
                 <SelectValue placeholder="Seleccione el tipo de correo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="registro">Registro</SelectItem>
+                <SelectItem value="registro-p">Registro presencial</SelectItem>
+                <SelectItem value="registro-v">Registro virtual</SelectItem>
               </SelectContent>
             </Select>
           </div>

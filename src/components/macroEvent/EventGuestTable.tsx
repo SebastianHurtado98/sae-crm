@@ -475,6 +475,17 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     }
 
     console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
+
+    const templateIds: { [key: string]: string } = {
+      "registro-p": "d-e9c0123bda8f46eabd8cda5feb941e09",
+      "registro-v": "d-19d5cfaf534948c48a9f8c9b16bc041f",
+    }
+    
+    const template_id = templateIds[emailType]
+    if (!template_id) {
+      console.error(`Invalid emailType: ${emailType}. Aborting email send.`)
+      return
+    }
     
     const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
     const batchSize = 1000
@@ -486,7 +497,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       const batchGuests = selectedGuestsData.slice(start, end)
 
       const emailData = {
-        template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",
+        template_id: template_id,
         personalizations: batchGuests.map((guest) => ({
           to: guest.email,
           dynamicTemplateData: {
