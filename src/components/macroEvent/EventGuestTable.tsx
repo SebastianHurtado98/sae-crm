@@ -96,6 +96,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [userTypes, setUserTypes] = useState<string[]>(['Todos'])
+  const [filterUserType, setFilterUserType] = useState<string>('Todos')
   const [filterRegistered, setFilterRegistered] = useState<'todos' | 'si' | 'no'>('todos');
   const [filterAssisted, setFilterAssisted] = useState<'todos' | 'si' | 'no'>('todos');
   const [filterDateFrom, setFilterDateFrom] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [selectAll, setSelectAll] = useState(false)
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 
-  const itemsPerPage = 100
+  const itemsPerPage = 10
 
   useEffect(() => {
     console.log("Fetching guests")
@@ -132,6 +134,11 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         : guests;
       console.log("filteredGuests", filteredGuests)
     }
+
+      // Filtro por tipo de usuario
+      if (filterUserType !== 'Todos') {
+        filteredGuests = filteredGuests.filter((guest) => guest.tipo_usuario === filterUserType);
+      }
       // Filtro por registrado
       if (filterRegistered !== 'todos') {
         const isRegistered = filterRegistered === 'si';
@@ -166,7 +173,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     });
     setVisibleGuests(sortedData);
     setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage));
-  }, [searchQuery, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests])
+  }, [searchQuery, filterUserType, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests])
 
   async function fetchGuests() {
     console.log("Fetching guests");
@@ -292,6 +299,12 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       }));
 
       setGuests(enrichedGuests);
+      setUserTypes([
+        ...userTypes,
+        ...[...new Set(enrichedGuests.map((guest) => guest.tipo_usuario))].filter(
+          (tipo) => tipo && tipo !== "" && !userTypes.includes(tipo)
+        )
+      ]);      
       setTotalPages(Math.ceil(count / itemsPerPage));
     }
   }
@@ -520,6 +533,25 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       Generar Códigos QR
       </Button>
       <div className="flex flex-wrap items-end gap-4">
+      {/* Filtro Tipo de Usuario */}
+      <div className="w-full sm:w-auto">
+        <label className="block text-sm font-medium text-gray-700">Tipo de Usuario</label>
+        <Select
+          onValueChange={(value) => setFilterUserType(value as string)}
+          value={filterUserType}
+        >
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue placeholder="Selecciona" />
+          </SelectTrigger>
+          <SelectContent>
+            {userTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       {/* Filtro Registrado */}
       <div className="w-full sm:w-auto">
         <label className="block text-sm font-medium text-gray-700">Registrado</label>
