@@ -3,11 +3,17 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string)
 
-type EmailData = {
-    to: string
-    template_id: string
+type Personalization = {
+  to: string
+  dynamicTemplateData: {
     first_name: string
     register_link: string
+  }
+}
+
+type EmailData = {
+  template_id: string
+  personalizations: Personalization[]
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -15,18 +21,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: "Method not allowed" })
     }
 
-    const { to, template_id, first_name, register_link }: EmailData = req.body
+    const { template_id, personalizations }: EmailData = req.body
   
     const msg: sgMail.MailDataRequired = {
-        personalizations: [
-            {
-              to: [{ email: to }],
-              dynamicTemplateData: {
-                first_name: first_name,
-                register_link: register_link,
-              },
-            },
-          ],
+        personalizations: personalizations.map((p) => ({
+          to: [{ email: p.to }],
+          dynamicTemplateData: p.dynamicTemplateData,
+        })),
         from: "contactasae@apoyoconsultoria.com",
         templateId: template_id       
     }

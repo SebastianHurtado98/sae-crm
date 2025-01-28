@@ -74,20 +74,6 @@ type ConsolidatedGuest = {
   registered: boolean
 }
 
-const testSelectedGuestsData = [
-  {
-    name: "Gabriel",
-    email: "gabriel_vidal_m@hotmail.com"
-  },
-  {
-    name: "Sebastian",
-    email: "shurtado100998@gmail.com"
-  },
-  {
-    name: "Yien",
-    email: "yyi@apoyoconsultoria.com"
-  }
-]
 
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
   const [guests, setGuests] = useState<ConsolidatedGuest[]>([])
@@ -106,7 +92,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [selectAll, setSelectAll] = useState(false)
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 
-  const itemsPerPage = 10
+  const [itemsPerPage, setItemsPerPage] = useState<number | "all">(10)
 
   useEffect(() => {
     console.log("Fetching guests")
@@ -164,16 +150,18 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         );
       }
   
-    const paginatedGuests = filteredGuests.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    );
+      let paginatedGuests = filteredGuests
+      if (itemsPerPage !== "all") {
+        paginatedGuests = filteredGuests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+        setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage))
+      } else {
+        setTotalPages(1)
+      }
     const sortedData = paginatedGuests.sort((a, b) => {
       return (a.company || "").localeCompare(b.company || "");
     });
     setVisibleGuests(sortedData);
-    setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage));
-  }, [searchQuery, filterUserType, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests])
+  }, [searchQuery, filterUserType, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests, itemsPerPage])
 
   async function fetchGuests() {
     console.log("Fetching guests");
@@ -305,7 +293,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           (tipo) => tipo && tipo !== "" && !userTypes.includes(tipo)
         )
       ]);      
-      setTotalPages(Math.ceil(count / itemsPerPage));
+      if (itemsPerPage !== "all") setTotalPages(Math.ceil(count / itemsPerPage));
     }
   }
 
@@ -328,6 +316,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
 
   const PaginationControls = () => (
     <div className="flex items-center justify-between px-2 py-4">
+    {itemsPerPage !== "all" && (
+      <>
       <Button
         variant="outline"
         size="sm"
@@ -349,6 +339,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         Siguiente
         <ChevronRight className="h-4 w-4 ml-2" />
       </Button>
+      </>
+      )}
     </div>
   )
 
@@ -476,16 +468,25 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   };
 
   const handleEmailConfirmation = async (emailType: string) => {
+    if (selectedGuests.length === 0) {
+      console.log("No guests selected. Aborting email send.")
+      setIsEmailModalOpen(false)
+      return
+    }
+
     console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
     
-    //const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
+    const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
 
-    for (const guest of testSelectedGuestsData) {
       const emailData = {
-        to: guest.email,
         template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",        
-        first_name: guest.name,
-        register_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`        
+        personalizations: selectedGuestsData.map((guest) => ({
+          to: guest.email.replace(/@.+$/, "@sink.sendgrid.net"),
+          dynamicTemplateData: {
+            first_name: guest.name,
+            register_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`,
+          },
+        })),
       }
 
       try {
@@ -504,7 +505,6 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       } catch (error) {
         console.error(`Error sending email to guest.email:`, error)
       }
-    }
 
     setIsEmailModalOpen(false)
   }
@@ -609,6 +609,28 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
               className="w-full sm:w-40"
             />
           </div>
+
+          {/* Items por página */}
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700">Items por página</label>
+            <Select
+              onValueChange={(value) => {
+                setItemsPerPage(value === "all" ? "all" : Number.parseInt(value))
+                setCurrentPage(1)
+              }}
+              value={itemsPerPage.toString()}
+            >
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
         </div>
       </div>
 
