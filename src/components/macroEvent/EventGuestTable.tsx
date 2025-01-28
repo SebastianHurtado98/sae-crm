@@ -488,7 +488,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       const emailData = {
         template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",
         personalizations: batchGuests.map((guest) => ({
-          to: guest.email.replace(/@.+$/, "@sink.sendgrid.net"),
+          to: guest.email,
           dynamicTemplateData: {
             first_name: guest.name,
             register_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`,

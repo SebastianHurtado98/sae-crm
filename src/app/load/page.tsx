@@ -43,32 +43,30 @@ export default function RegisterGuestsPage() {
     Papa.parse(csvFile, {
       header: true,
       complete: async (result) => {
-        const rows = result.data as { email: string}[];
-        const updates = [];
-
-        for (const row of rows) {
-          try {
-            const { error: updateError } = await supabase
-              .from('event_guest')
-              .update({ assisted: true })
-              .eq('email', row.email)
-              .eq('event_id', 53);
-
-            console.log(`Actualizando: ${row.email}`);
-            if (updateError) {
-              console.error(`Error actualizando: ${row.email}`, updateError);
-              continue;
-            }
-
-            updates.push(row);
-          } catch (error) {
-            console.error('Error procesando fila:', row, error);
+        const rows = result.data as { email: string }[];
+        const emailList = rows.map((row) => row.email); // Extraemos la lista de emails
+        
+        try {
+          // Verificamos cuántos emails de la lista existen en la base de datos
+          const { data: matchingEmails, error: selectError } = await supabase
+            .from('executive')
+            .select('email') // Seleccionamos solo el campo email
+            .in('email', emailList); // Comparamos con la lista de emails
+        
+          if (selectError) {
+            console.error('Error verificando emails en la base de datos:', selectError);
+            return;
           }
+        
+          // Contamos cuántos correos coinciden
+          const count = matchingEmails?.length || 0;
+        
+          console.log(`Total de correos encontrados en la base de datos: ${count}`);
+        } catch (error) {
+          console.error('Error procesando la verificación de correos:', error);
         }
-
-        setStatus(`Procesado correctamente: ${updates.length} registros actualizados.`);
-        setProcessing(false);
-      },
+        
+      },        
       error: (error) => {
         console.error('Error procesando CSV:', error);
         setStatus('Error procesando el archivo CSV.');
