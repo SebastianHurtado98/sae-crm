@@ -477,10 +477,17 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     console.log(`Sending ${emailType} emails to ${selectedGuests.length} guests`)
     
     const selectedGuestsData = guests.filter((guest) => selectedGuests.includes(guest.id))
+    const batchSize = 1000
+    const batches = Math.ceil(selectedGuestsData.length / batchSize)
+
+    for (let i = 0; i < batches; i++) {
+      const start = i * batchSize
+      const end = Math.min((i + 1) * batchSize, selectedGuestsData.length)
+      const batchGuests = selectedGuestsData.slice(start, end)
 
       const emailData = {
-        template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",        
-        personalizations: selectedGuestsData.map((guest) => ({
+        template_id: "d-e9c0123bda8f46eabd8cda5feb941e09",
+        personalizations: batchGuests.map((guest) => ({
           to: guest.email.replace(/@.+$/, "@sink.sendgrid.net"),
           dynamicTemplateData: {
             first_name: guest.name,
@@ -499,12 +506,14 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         })
 
         if (!response.ok) {
-          throw new Error("Failed to send email")
+          throw new Error(`Failed to send email batch ${i + 1} of ${batches}`)
         }
 
+        console.log(`Successfully sent batch ${i + 1} of ${batches}`)
       } catch (error) {
-        console.error(`Error sending email to guest.email:`, error)
+        console.error(`Error sending email batch ${i + 1} of ${batches}:`, error)
       }
+    }
 
     setIsEmailModalOpen(false)
   }
