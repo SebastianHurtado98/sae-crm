@@ -20,6 +20,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
 import { EmailConfirmationModal } from '../EmailModal'
+import * as XLSX from 'xlsx'
 
 /*
 type Guest = {
@@ -612,6 +613,38 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     setIsEmailModalOpen(false)
     window.location.reload();
   }
+
+ const handleExcelClick = async () => {
+    if (data) {
+      try {
+        const enrichedData = data.map((guest) => ({
+          email: guest.email,
+          name: guest.is_user
+            ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
+            : guest.name,
+        }));
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(enrichedData);
+        XLSX.utils.book_append_sheet(wb, ws, "Guests");
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'guests.xlsx';
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+      } catch (parseError) {
+        console.error('Error generating Excel:', parseError);
+      }
+    }
+  };
 
   return (
     <div>
