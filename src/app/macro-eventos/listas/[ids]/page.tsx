@@ -61,8 +61,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids: num
         const enrichedData = data.map((guest) => ({
           email: guest.email,
           name: guest.is_user
-            ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
-            : guest.name,
+          ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
+          : guest.name,
+          company: guest.company_razon_social,
+          tipo_usuario: guest.tipo_usuario,
+          tipo_membresia: guest.tipo_membresia,
+          registered: guest.registered === null ? false : guest.registered,
+          assisted: guest.assisted === null ? false : guest.assisted,
+          registration_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`
         }));
 
         const wb = XLSX.utils.book_new();
