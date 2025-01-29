@@ -177,7 +177,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       return (a.company || "").localeCompare(b.company || "");
     });
     setVisibleGuests(sortedData);
-  }, [searchQuery, filterUserType, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests, itemsPerPage])
+  }, [searchQuery, filterUserType, filterLastEmailSent, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests, itemsPerPage])
 
   async function fetchGuests() {
     console.log("Fetching guests");

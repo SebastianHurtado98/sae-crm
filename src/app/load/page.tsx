@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Papa from 'papaparse';
 
 export default function RegisterGuestsPage() {
-  const [csvData, setCsvData] = useState<{ email: string; tareco: string; apodo: string; estimado: string }[]>([]);
+  const [csvData, setCsvData] = useState<{ email: string }[]>([]);
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [matchingCount, ] = useState<number | null>(null);
@@ -23,12 +23,6 @@ export default function RegisterGuestsPage() {
           .map((row) => ({
             // @ts-expect-error No se puede garantizar que los campos existan
             email: row.email?.trim(),
-            // @ts-expect-error No se puede garantizar que los campos existan
-            tareco: row.tareco?.trim() || null,
-            // @ts-expect-error No se puede garantizar que los campos existan
-            apodo: row.apodo?.trim() || null,
-            // @ts-expect-error No se puede garantizar que los campos existan
-            estimado: row.estimado?.trim() || null,
           }))
           .filter((row) => row.email); // Solo incluir filas con email válido
 
@@ -61,9 +55,7 @@ export default function RegisterGuestsPage() {
         const { error: updateError } = await supabase
           .from("executive")
           .update({
-            tareco: entry.tareco,
-            apodo: entry.apodo,
-            estimado: entry.estimado,
+            active: true,
           })
           .eq("email", entry.email);
 
