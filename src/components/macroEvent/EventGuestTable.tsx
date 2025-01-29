@@ -20,7 +20,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
 import { EmailConfirmationModal } from '../EmailModal'
-import * as XLSX from 'xlsx'
+//import * as XLSX from 'xlsx'
 
 /*
 type Guest = {
@@ -361,6 +361,16 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   }
 
   async function deleteGuest(guestId: string) {
+    const { error: eventGuestError } = await supabase
+    .from('event_guest')
+    .delete()
+    .eq('guest_id', guestId)
+
+  if (eventGuestError) {
+    console.error('Error deleting guest:', eventGuestError)
+    return
+  }
+
     const { error } = await supabase
       .from('guest')
       .delete()
@@ -614,7 +624,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     window.location.reload();
   }
 
- const handleExcelClick = async () => {
+ /*const handleExcelClick = async () => {
     if (data) {
       try {
         const enrichedData = data.map((guest) => ({
@@ -644,7 +654,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         console.error('Error generating Excel:', parseError);
       }
     }
-  };
+  };*/
 
   return (
     <div>
