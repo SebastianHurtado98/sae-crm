@@ -9,7 +9,7 @@ export default function RegisterGuestsPage() {
   const [csvData, setCsvData] = useState<{ email: string; tareco: string; apodo: string; estimado: string }[]>([]);
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
-  const [matchingCount, setMatchingCount] = useState<number | null>(null);
+  const [matchingCount, ] = useState<number | null>(null);
 
   // Cargar datos desde el CSV
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
