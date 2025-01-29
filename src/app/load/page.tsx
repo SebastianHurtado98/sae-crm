@@ -1,88 +1,111 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import Papa from 'papaparse';
 
 export default function RegisterGuestsPage() {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvData, setCsvData] = useState<{ email: string; tareco: string; apodo: string; estimado: string }[]>([]);
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [matchingCount, setMatchingCount] = useState<number | null>(null);
 
-  useEffect(() => {
-    const logGuestsByEmail = async () => {
-      const { data, error } = await supabase
-        .from('event_guest')
-        .select('*')
-        .eq('email', 'sebastian.hurtado@utec.edu.pe');
-      if (error) {
-        console.error('Error fetching guests:', error);
-      } else {
-        console.log('Guests with email sebastian.hurtado@utec.edu.pe:', data);
-      }
-    };
-
-    logGuestsByEmail();
-  }, []);
-
+  // Cargar datos desde el CSV
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    setCsvFile(file);
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      complete: (result) => {
+        const parsedData = result.data
+          .map((row) => ({
+            // @ts-expect-error No se puede garantizar que los campos existan
+            email: row.email?.trim(),
+            // @ts-expect-error No se puede garantizar que los campos existan
+            tareco: row.tareco?.trim() || null,
+            // @ts-expect-error No se puede garantizar que los campos existan
+            apodo: row.apodo?.trim() || null,
+            // @ts-expect-error No se puede garantizar que los campos existan
+            estimado: row.estimado?.trim() || null,
+          }))
+          .filter((row) => row.email); // Solo incluir filas con email válido
+
+        setCsvData(parsedData);
+        console.log("Datos cargados desde CSV:", parsedData);
+        setStatus(`Se cargaron ${parsedData.length} registros.`);
+      },
+      error: (error) => {
+        console.error("Error procesando CSV:", error);
+        setStatus("Error procesando el archivo CSV.");
+      },
+    });
   };
 
-  const processCsv = async () => {
-    if (!csvFile) {
-      setStatus('Por favor, selecciona un archivo CSV.');
+  // Actualizar los datos en Supabase
+  const updateDataInDatabase = async () => {
+    if (csvData.length === 0) {
+      console.log("No hay datos cargados en memoria.");
       return;
     }
 
+    const dataToUpdate = csvData.slice(0, 800); // Tomar los primeros 500 para actualizar
+    console.log("Actualizando los siguientes registros:", dataToUpdate);
     setProcessing(true);
-    setStatus(null);
+    setStatus("Actualizando datos en la base de datos...");
 
-    Papa.parse(csvFile, {
-      header: true,
-      complete: async (result) => {
-        const rows = result.data as { email: string }[];
-        const emailList = rows.map((row) => row.email); // Extraemos la lista de emails
-        
-        try {
-          // Verificamos cuántos emails de la lista existen en la base de datos
-          const { data: matchingEmails, error: selectError } = await supabase
-            .from('executive')
-            .select('email') // Seleccionamos solo el campo email
-            .in('email', emailList); // Comparamos con la lista de emails
-        
-          if (selectError) {
-            console.error('Error verificando emails en la base de datos:', selectError);
-            return;
-          }
-        
-          // Contamos cuántos correos coinciden
-          const count = matchingEmails?.length || 0;
-        
-          console.log(`Total de correos encontrados en la base de datos: ${count}`);
-        } catch (error) {
-          console.error('Error procesando la verificación de correos:', error);
+    try {
+      for (const entry of dataToUpdate) {
+
+        const { error: updateError } = await supabase
+          .from("executive")
+          .update({
+            tareco: entry.tareco,
+            apodo: entry.apodo,
+            estimado: entry.estimado,
+          })
+          .eq("email", entry.email);
+
+        if (updateError) {
+          console.error("❌");
+        } else {
+          console.log("Actualización");
         }
-        
-      },        
-      error: (error) => {
-        console.error('Error procesando CSV:', error);
-        setStatus('Error procesando el archivo CSV.');
-        setProcessing(false);
-      },
-    });
+      }
+
+      setStatus(`Se actualizaron ${dataToUpdate.length} registros.`);
+      console.log("🔥 Actualización completada.");
+    } catch (error) {
+      console.error("Error en la actualización de Supabase:", error);
+      setStatus("Error en la actualización.");
+    }
+
+    setProcessing(false);
   };
 
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Registrar Invitados desde CSV</h1>
+
+      {/* Subir archivo CSV */}
       <input type="file" accept=".csv" onChange={handleFileUpload} />
-      <Button onClick={processCsv} disabled={processing}>
-        {processing ? 'Procesando...' : 'Registrar'}
+
+      {/* Mostrar cantidad de registros cargados */}
+      {csvData.length > 0 && (
+        <p className="text-sm text-gray-700">
+          {csvData.length} registros cargados en memoria.
+        </p>
+      )}
+
+      {/* Botón para actualizar en Supabase */}
+      <Button onClick={updateDataInDatabase} disabled={processing || csvData.length === 0}>
+        {processing ? 'Actualizando...' : 'Actualizar en Base de Datos'}
       </Button>
+
+      {/* Mostrar resultado */}
       {status && <p className="mt-2 text-sm text-gray-700">{status}</p>}
+      {matchingCount !== null && <p className="text-sm text-green-700">Correos encontrados: {matchingCount}</p>}
     </div>
   );
 }

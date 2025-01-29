@@ -72,7 +72,17 @@ type ConsolidatedGuest = {
   end_date: string
   assisted: boolean
   registered: boolean
+  lastEmailSent: string
+  lastEmailSentShow: string
+  apodo: string
+  estimado: string
 }
+
+const emailTypeLabels: { [key: string]: string } = {
+  "ninguno": "Invitación no enviada",
+  "registro-p": "Invitación SAE enviada",
+  "registro-v": "Invitación SAE virtual enviada",
+};
 
 
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
@@ -84,6 +94,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   const [totalPages, setTotalPages] = useState(1)
   const [userTypes, setUserTypes] = useState<string[]>(['Todos'])
   const [filterUserType, setFilterUserType] = useState<string>('Todos')
+  const [filterLastEmailSent, setFilterLastEmailSent] = useState<'todos' | 'ninguno' | 'registro-p' | 'registro-v'>('todos');
   const [filterRegistered, setFilterRegistered] = useState<'todos' | 'si' | 'no'>('todos');
   const [filterAssisted, setFilterAssisted] = useState<'todos' | 'si' | 'no'>('todos');
   const [filterDateFrom, setFilterDateFrom] = useState<string | null>(null);
@@ -131,6 +142,11 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         filteredGuests = filteredGuests.filter((guest) => guest.registered === isRegistered);
       }
 
+      // Filtro por correo enviado
+      if (filterLastEmailSent !== 'todos') {
+        filteredGuests = filteredGuests.filter((guest) => guest.lastEmailSent === filterLastEmailSent);
+      }
+
       // Filtro por asistió
       if (filterAssisted !== 'todos') {
         const isAssisted = filterAssisted === 'si';
@@ -174,6 +190,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         company:company_id (razon_social),
         executive:executive_id (
         name,
+        estimado,
+        apodo,
         last_name,
         email,
         position,
@@ -258,26 +276,70 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         }
       }
 
-      const consolidatedGuests: ConsolidatedGuest[] = data.map((guest) => ({
-        id: guest.id,
-        name: guest.is_user
-          ? `${guest.executive?.name?.trim()} ${guest.executive?.last_name?.trim() || ''}`.trim()
-          : guest.name ?? '',
-        company: guest.is_client_company
-          ? guest.company?.razon_social ?? ''
-          : guest.company_razon_social ?? '',
-        position: guest.is_user
-          ? guest.executive?.position ?? ''
-          : guest.position ?? '',
-        email: guest.email ?? '',
-        tipo_usuario: guest.is_user
-          ? guest.executive?.user_type ?? ''
-          : guest.tipo_usuario ?? '',
-        tipo_membresia: guest.is_user ? guest.executive?.membership?.membership_type ?? '' : guest.tipo_membresia ?? '',
-        end_date: guest.executive?.end_date ?? '',
-        assisted: eventGuestMap[guest.id]?.assisted ?? false,
-        registered: eventGuestMap[guest.id]?.registered ?? false,
-      }));
+      const macroEventId = 5;
+
+      const { data: emailLogs, error } = await supabase
+        .from("sendgridLogs")
+        .select("email, email_type, created_at")
+        .eq("macro_event_id", macroEventId)
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Error fetching sendgridLogs:", error);
+      }
+
+      const lastEmailSentMap = new Map<string, string>();
+
+      if (emailLogs) {
+        emailLogs.forEach((log) => {
+          if (!lastEmailSentMap.has(log.email)) {
+            lastEmailSentMap.set(log.email, log.email_type);
+          }
+        });
+      }
+
+
+      const consolidatedGuests: ConsolidatedGuest[] = data.map((guest) => {
+        const email = guest.email ?? '';
+        const lastEmailSent = lastEmailSentMap.get(email) || 'ninguno';
+        const lastEmailSentShow = emailTypeLabels[lastEmailSent] || "Invitación no enviada";
+        const name = guest.is_user
+        ? `${guest.executive?.name?.trim()} ${guest.executive?.last_name?.trim() || ''}`.trim()
+        : guest.name ?? '';
+    
+        // Generar `apodo`, asegurando que nunca sea vacío
+        const apodo = guest.is_user
+          ? (guest.executive?.apodo?.trim() ? guest.executive.apodo.trim() : name) // Si está vacío o null, usar name
+          : name; // Si no es usuario, `apodo` es igual a `name`
+
+        // Generar `estimado`, asegurando que nunca sea vacío
+        const estimado = guest.is_user
+          ? (guest.executive?.estimado?.trim() ? guest.executive.estimado.trim() : "Estimado(a)") // Si está vacío o null, usar "Estimado(a)"
+          : "Estimado(a)"; // Si es externo, siempre "Estimado(a)"
+
+        return {
+          id: guest.id,
+          name: name,
+          company: guest.is_client_company
+            ? guest.company?.razon_social ?? ''
+            : guest.company_razon_social ?? '',
+          position: guest.is_user
+            ? guest.executive?.position ?? ''
+            : guest.position ?? '',
+          email: email,
+          tipo_usuario: guest.is_user
+            ? guest.executive?.user_type ?? ''
+            : guest.tipo_usuario ?? '',
+          tipo_membresia: guest.is_user ? guest.executive?.membership?.membership_type ?? '' : guest.tipo_membresia ?? '',
+          end_date: guest.executive?.end_date ?? '',
+          assisted: eventGuestMap[guest.id]?.assisted ?? false,
+          registered: eventGuestMap[guest.id]?.registered ?? false,
+          lastEmailSent: lastEmailSent,
+          lastEmailSentShow: lastEmailSentShow,
+          apodo: apodo,
+          estimado: estimado,
+      }
+    });
 
 
       // Agregar datos de event_guest si están disponibles
@@ -468,6 +530,10 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   };
 
   const handleEmailConfirmation = async (emailType: string) => {
+
+    // TODO: Cambiar macro evento
+    const macroEventId = 5;
+
     if (selectedGuests.length === 0) {
       console.log("No guests selected. Aborting email send.")
       setIsEmailModalOpen(false)
@@ -502,6 +568,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           to: guest.email,
           dynamicTemplateData: {
             first_name: guest.name,
+            estimado: guest.estimado,
+            apodo: guest.apodo,
             register_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`,
           },
         })),
@@ -520,6 +588,21 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           throw new Error(`Failed to send email batch ${i + 1} of ${batches}`)
         }
 
+        const { data, error } = await supabase.from("sendgridLogs").insert(
+          batchGuests.map((guest) => ({
+            email: guest.email,
+            email_type: emailType,
+            macro_event_id: macroEventId,
+          }))
+        )
+
+        if (error) {
+          console.error(`Error inserting logs into Supabase for batch ${i + 1}:`, error)
+        } else {
+          console.log(`Successfully inserted logs for batch ${i + 1}`)
+          console.log(data)
+        }
+
         console.log(`Successfully sent batch ${i + 1} of ${batches}`)
       } catch (error) {
         console.error(`Error sending email batch ${i + 1} of ${batches}:`, error)
@@ -527,6 +610,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     }
 
     setIsEmailModalOpen(false)
+    window.location.reload();
   }
 
   return (
@@ -553,6 +637,24 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       Generar Códigos QR
       </Button>
       <div className="flex flex-wrap items-end gap-4">
+      {/* Filtro Correo Enviado */}
+      <div className="w-full sm:w-auto">
+        <label className="block text-sm font-medium text-gray-700">Correo Enviado</label>
+        <Select
+          onValueChange={(value) => setFilterLastEmailSent(value as 'todos' | 'ninguno' | 'registro-p' | 'registro-v')}
+          value={filterLastEmailSent}
+        >
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue placeholder="Selecciona" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos</SelectItem>
+            <SelectItem value="ninguno">Ninguno</SelectItem>
+            <SelectItem value="registro-p">Invitación SAE</SelectItem>
+            <SelectItem value="registro-v">Invitación SAE Virtual</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       {/* Filtro Tipo de Usuario */}
       <div className="w-full sm:w-auto">
         <label className="block text-sm font-medium text-gray-700">Tipo de Usuario</label>
@@ -697,7 +799,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                 <TableCell>{guest.email}</TableCell>
                 <TableCell>{guest.tipo_usuario}
                 </TableCell>
-                <TableCell>Registro Enviado</TableCell>
+                <TableCell>{guest.lastEmailSentShow}</TableCell>
                 <TableCell>{guest.assisted ? 'Sí' : 'No'}</TableCell>
                 <TableCell>{guest.registered ? 'Sí' : 'No'}</TableCell>
                 <TableCell>
