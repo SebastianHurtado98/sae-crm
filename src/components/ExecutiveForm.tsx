@@ -168,7 +168,7 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
       setDni(executive.dni)
       setName(executive.name)
       setLastName(executive.last_name)
-      setCompanyId(executive.company_id.toString())
+      setCompanyId(executive.company_id?.toString())
       setInitialCompany(executive.company)
       setAssistantId(executive.assistant_id?.toString() || '')
       setReemplazaA(executive.reemplaza_a?.toString() || '0')

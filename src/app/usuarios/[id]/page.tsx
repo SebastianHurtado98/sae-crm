@@ -159,7 +159,7 @@ export default function ExecutiveDetailsPage() {
             <div className="space-y-2">
               <h3 className="text-xl font-semibold">Información laboral</h3>
               <p className="flex items-center">
-                Empresa: {executive.company.razon_social}
+                Empresa: {executive.company?.razon_social}
               </p>
               <p className="flex items-center">
                 Membresía: {executive.membership ? executive.membership.membership_type : 'No asignado'}

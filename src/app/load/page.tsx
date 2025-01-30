@@ -1,17 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import Papa from 'papaparse';
 
-export default function RegisterGuestsPage() {
+export default function ReadEmailsFromCSV() {
   const [csvData, setCsvData] = useState<{ email: string }[]>([]);
-  const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
-  const [matchingCount, ] = useState<number | null>(null);
+  const [processing, setProcessing] = useState(false);
 
-  // Cargar datos desde el CSV
+  // Cargar datos desde el archivo CSV
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -37,48 +35,56 @@ export default function RegisterGuestsPage() {
     });
   };
 
-  // Actualizar los datos en Supabase
-  const updateDataInDatabase = async () => {
+  // Enviar emails en lotes
+  const sendEmails = async () => {
     if (csvData.length === 0) {
-      console.log("No hay datos cargados en memoria.");
+      console.log("No hay datos cargados.");
+      setStatus("No hay correos para enviar.");
       return;
     }
 
-    const dataToUpdate = csvData.slice(0, 800); // Tomar los primeros 500 para actualizar
-    console.log("Actualizando los siguientes registros:", dataToUpdate);
     setProcessing(true);
-    setStatus("Actualizando datos en la base de datos...");
+    const batchSize = 1000;
+    const batches = Math.ceil(csvData.length / batchSize);
 
-    try {
-      for (const entry of dataToUpdate) {
+    for (let i = 0; i < batches; i++) {
+      const start = i * batchSize;
+      const end = Math.min((i + 1) * batchSize, csvData.length);
+      const batchEmails = csvData.slice(start, end);
 
-        const { error: updateError } = await supabase
-          .from("executive")
-          .update({
-            active: true,
-          })
-          .eq("email", entry.email);
+      const emailData = {
+        template_id: "d-06a8253663564735bdbbcdfb031e0ec3",
+        personalizations: batchEmails.map((entry) => ({
+          to: entry.email,
+        })),
+      };
 
-        if (updateError) {
-          console.error("❌");
-        } else {
-          console.log("Actualización");
+      try {
+        const response = await fetch("/api/axpen", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(emailData),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to send email batch ${i + 1} of ${batches}`);
         }
-      }
 
-      setStatus(`Se actualizaron ${dataToUpdate.length} registros.`);
-      console.log("🔥 Actualización completada.");
-    } catch (error) {
-      console.error("Error en la actualización de Supabase:", error);
-      setStatus("Error en la actualización.");
+        console.log(`Successfully sent batch ${i + 1} of ${batches}`);
+      } catch (error) {
+        console.error(`Error sending email batch ${i + 1} of ${batches}:`, error);
+      }
     }
 
+    setStatus(`Se enviaron ${csvData.length} correos.`);
     setProcessing(false);
   };
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Registrar Invitados desde CSV</h1>
+      <h1 className="text-xl font-bold">Leer Correos desde CSV y Enviar Emails</h1>
 
       {/* Subir archivo CSV */}
       <input type="file" accept=".csv" onChange={handleFileUpload} />
@@ -90,14 +96,13 @@ export default function RegisterGuestsPage() {
         </p>
       )}
 
-      {/* Botón para actualizar en Supabase */}
-      <Button onClick={updateDataInDatabase} disabled={processing || csvData.length === 0}>
-        {processing ? 'Actualizando...' : 'Actualizar en Base de Datos'}
+      {/* Botón para enviar correos */}
+      <Button onClick={sendEmails} disabled={processing || csvData.length === 0}>
+        {processing ? 'Enviando...' : 'Enviar Emails'}
       </Button>
 
       {/* Mostrar resultado */}
       {status && <p className="mt-2 text-sm text-gray-700">{status}</p>}
-      {matchingCount !== null && <p className="text-sm text-green-700">Correos encontrados: {matchingCount}</p>}
     </div>
   );
 }
