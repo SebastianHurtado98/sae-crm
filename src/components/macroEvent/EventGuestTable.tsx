@@ -20,7 +20,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
 import { EmailConfirmationModal } from '../EmailModal'
-//import * as XLSX from 'xlsx'
+import * as XLSX from 'xlsx'
 
 /*
 type Guest = {
@@ -77,6 +77,8 @@ type ConsolidatedGuest = {
   lastEmailSentShow: string
   apodo: string
   estimado: string
+  tareco: string
+  is_user: string
 }
 
 const emailTypeLabels: { [key: string]: string } = {
@@ -89,6 +91,7 @@ const emailTypeLabels: { [key: string]: string } = {
 export function GuestTable({ listId, eventId = null }: { listId: number; eventId?: number | null }) {
   const [guests, setGuests] = useState<ConsolidatedGuest[]>([])
   const [visibleGuests, setVisibleGuests] = useState<ConsolidatedGuest[]>([])
+  const [filterGuests, setFilterGuests] = useState<ConsolidatedGuest[]>([])
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -167,6 +170,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         );
       }
   
+      setFilterGuests(filteredGuests)
+      
       let paginatedGuests = filteredGuests
       if (itemsPerPage !== "all") {
         paginatedGuests = filteredGuests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -198,6 +203,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         position,
         end_date,
         user_type,
+        tareco,
         membership_id,
         membership:membership_id (membership_type)
       )
@@ -318,6 +324,9 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           ? (guest.executive?.estimado?.trim() ? guest.executive.estimado.trim() : "Estimado(a)") // Si está vacío o null, usar "Estimado(a)"
           : "Estimado(a)"; // Si es externo, siempre "Estimado(a)"
 
+        const tareco = guest.is_user
+          ? (guest.executive?.tareco?.trim() ? guest.executive.tareco.trim() : "-") : "-";
+
         return {
           id: guest.id,
           name: name,
@@ -339,6 +348,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           lastEmailSentShow: lastEmailSentShow,
           apodo: apodo,
           estimado: estimado,
+          tareco: tareco,
+          is_user: guest.is_user
       }
     });
 
@@ -624,14 +635,26 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     window.location.reload();
   }
 
- /*const handleExcelClick = async () => {
+  const handleExcelClick = async () => {
+    const data = filterGuests;
+
     if (data) {
       try {
         const enrichedData = data.map((guest) => ({
+          name: guest.name,
+          company: guest.company,
+          position: guest.position,
           email: guest.email,
-          name: guest.is_user
-            ? `${guest.executive?.name} ${guest.executive?.last_name || ''}`.trim()
-            : guest.name,
+          tipo_usuario: guest.tipo_usuario,
+          estado_correo: guest.lastEmailSentShow,
+          registered: guest.registered,
+          assisted: guest.assisted,
+          tipo_membresia: guest.tipo_membresia,
+          apodo: guest.apodo,
+          estimado: guest.estimado,
+          tareco: guest.tareco,
+          usuario: guest.is_user ? "Interno" : "Externo",
+          registration_link: `https://sae-register.vercel.app/${encodeURIComponent(guest.email)}`,
         }));
 
         const wb = XLSX.utils.book_new();
@@ -654,7 +677,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
         console.error('Error generating Excel:', parseError);
       }
     }
-  };*/
+  };
 
   return (
     <div>
@@ -797,6 +820,9 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           </div>
 
         </div>
+      </div>
+      <div className="flex ml-auto space-x-2">
+        <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
       </div>
 
       <Button className="mt-4" onClick={() => setIsEmailModalOpen(true)}>

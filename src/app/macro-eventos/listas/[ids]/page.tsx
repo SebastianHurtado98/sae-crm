@@ -8,7 +8,7 @@ import { GuestTable } from '@/components/macroEvent/EventGuestTable'
 import { CreateGuestForm } from '@/components/macroEvent/CreateGuestForm'
 import { ImportUsers } from '@/components/macroEvent/ImportUsers'
 import { ImportExternals } from '@/components/macroEvent/ImportExternals'
-import * as XLSX from 'xlsx'
+//import * as XLSX from 'xlsx'
 
 type List = {
   id: number
@@ -42,7 +42,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids: num
   }
 
 
-  const handleExcelClick = async () => {
+  /*const handleExcelClick = async () => {
     const { data, error } = await supabase
       .from('guest')
       .select(`
@@ -91,7 +91,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids: num
         console.error('Error generating Excel:', parseError);
       }
     }
-  };
+  };*/
 
   return (
     <div className="container mx-auto py-10">
@@ -121,9 +121,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ ids: num
               <Button onClick={() => setShowForm(!showForm)}>
                 {showForm ? 'Cerrar formulario' : 'Añadir invitado'}
               </Button>
-              <div className="flex ml-auto space-x-2">
-                <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
-              </div>
             </div>
             {showForm && <CreateGuestForm listId={resolvedParams.ids} onComplete={() => setShowForm(false)} />}
             <GuestTable listId={resolvedParams.ids} />

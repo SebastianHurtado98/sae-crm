@@ -9,7 +9,7 @@ import { UploadZoomAttendance } from '@/components/UploadZoomAttendance'
 import { EventReportTab } from '@/components/EventReportTab'
 import { ScanQRTab } from '@/components/ScanGuests'
 import { useSearchParams } from 'next/navigation'
-import * as XLSX from 'xlsx'
+//import * as XLSX from 'xlsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CreateEventGuestForm } from '@/components/CreateGuestForm'
 import { GuestTable } from '@/components/macroEvent/EventGuestTable'
@@ -100,7 +100,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
   if (!event) return <div>Cargando...</div>
 
-  const handleExcelClick = async () => {
+  /*const handleExcelClick = async () => {
     const { data, error } = await supabase
       .from('event_guest')
       .select(`
@@ -150,7 +150,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         console.error('Error generating Excel:', parseError);
       }
     }
-  };
+  };*/
 
   const handleSelectList = async () => {
     if (selectedListId) {
@@ -246,7 +246,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 <Button onClick={() => setShowForm(!showForm)}>
                   {showForm ? 'Cerrar formulario' : 'Añadir invitado'}
                 </Button>
-                <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
               </div>
             </div>
             {showForm && <CreateEventGuestForm eventId={parseInt(resolvedParams.id)} onComplete={() => setShowForm(false)} />}
