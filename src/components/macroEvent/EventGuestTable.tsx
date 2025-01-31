@@ -585,7 +585,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
       const batchGuests = selectedGuestsData.slice(start, end)
 
       const hasAlreadySentEmail = batchGuests.some(
-        (guest) => guest.lastEmailSent === emailType
+        (guest) => guest.lastEmailSent === "registro-p" || guest.lastEmailSent === "registro-v"
       );
       if (hasAlreadySentEmail) {
         console.log(`Skipping batch ${i + 1} because at least one guest already received ${emailType}`);
