@@ -225,7 +225,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <SelectContent>
             <SelectItem value="invitados">Invitados</SelectItem>
             <SelectItem value="subir-asistencia">Subir Asistencia Zoom</SelectItem>
+            {event.event_type === "Presencial" && (
             <SelectItem value="escanear-qr">Escanear QR</SelectItem>
+            )}            
             <SelectItem value="reporte">Reporte</SelectItem>
           </SelectContent>
         </Select>
@@ -234,7 +236,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
       <TabsList className="hidden sm:grid w-full grid-cols-4">
         <TabsTrigger value="invitados">Invitados</TabsTrigger>
         <TabsTrigger value="subir-asistencia">Subir Asistencia Zoom</TabsTrigger>
+        {event.event_type === "Presencial" && (
         <TabsTrigger value="escanear-qr">Escanear QR</TabsTrigger>
+        )}
         <TabsTrigger value="reporte">Reporte</TabsTrigger>
       </TabsList>
         
