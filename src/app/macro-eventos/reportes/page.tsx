@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useState, useMemo, useCallback, useEffect, Suspense } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { EventsReportTable } from "@/components/EventsReportTable"
 import { StatsCards } from "@/components/StatsCards"
@@ -59,6 +59,14 @@ const calculateStats = (macroEventId: number, events: Event[], eventGuests: Even
 }
 
 export default function MacroReportePage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <MacroReporteContent />
+    </Suspense>
+  );
+}
+
+function MacroReporteContent() {
   const searchParams = useSearchParams();
   const initialMacroEventId = searchParams ? searchParams.get("macroEventId") || "" : "";
   const [macroEventId, setMacroEventId] = useState(initialMacroEventId || '')
@@ -84,6 +92,7 @@ export default function MacroReportePage() {
       .from('event')
       .select('id, name, event_type, date_hour, place, register_open, macro_event_id')
       .eq('macro_event_id', macroEventId)
+      .order('date_hour', { ascending: true })
 
 
     if (error) {
