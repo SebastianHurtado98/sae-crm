@@ -284,7 +284,6 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                     <TableHead className="w-[150px] min-w-[150px]">Nombre</TableHead>
                     <TableHead className="w-[150px] min-w-[150px]">Empresa</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Tipo de usuario</TableHead>
-                    <TableHead className="w-[100px] min-w-[100px]">Tipo de membresía</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Evento</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Registrado</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Asistió</TableHead>
@@ -297,7 +296,6 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                       <TableCell>{invitado.name}</TableCell>
                       <TableCell>{invitado.company}</TableCell>
                       <TableCell>{invitado.tipo_usuario}</TableCell>
-                      <TableCell>{invitado.tipo_membresia}</TableCell>
                       <TableCell>{invitado.eventName}</TableCell>
                       <TableCell>{invitado.registered ? 'Sí' : 'No'}</TableCell>
                       <TableCell>{invitado.assisted ? 'Sí' : 'No'}</TableCell>
