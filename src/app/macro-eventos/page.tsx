@@ -281,7 +281,7 @@ export default function EventosNuevo() {
                                 <h2 className="text-lg font-bold mb-2">Detalles</h2>
                                 <p className="text-md mb-4">{macroEvent.name}</p>
                                 <Button asChild>
-                                    <Link href={`/macro-eventos/reportes?macroReport=${macroEvent.id}`}>
+                                    <Link href={`/macro-eventos/reportes?macroEventId=${macroEvent.id}`}>
                                         Ver reporte
                                     </Link>
                                 </Button>

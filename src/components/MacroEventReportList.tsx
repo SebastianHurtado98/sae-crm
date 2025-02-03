@@ -21,14 +21,23 @@ type SupabaseGuest = {
   position: string | null
   tipo_usuario: string | null
   tipo_membresia: string | null
-  executive?: {
+  guest?: {
     name: string
-    last_name: string
-    position: string
-  } | null
-  company?: {
-    razon_social: string
-  } | null
+    is_user: string
+    company_razon_social: string
+    tipo_usuario: string
+    tipo_membresia: string
+    executive?: {
+      name: string
+      last_name: string
+      position: string
+      user_type: string
+    } | null
+    company?: {
+      razon_social: string
+    } | null
+  }
+  event_id: string
 }
 
 type ReportGuest = {
@@ -41,6 +50,7 @@ type ReportGuest = {
   virtual_session_time: number
   tipo_usuario: string
   tipo_membresia: string
+  eventName: string
 }
 
 type EventData = {
@@ -59,8 +69,6 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
   const [searchQuery, setSearchQuery] = useState('')
   const [registeredFilter, setRegisteredFilter] = useState("Todos")
   const [attendedFilter, setAttendedFilter] = useState("Todos")
-  const [timeFilter, setTimeFilter] = useState("Todos")
-  const [showConnectionTimeChart, setShowConnectionTimeChart] = useState(false)
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -93,11 +101,10 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
         return;
     }
 
-    const hasVirtualEvent = events.some(event => event.event_type === 'Virtual');
-    setShowConnectionTimeChart(hasVirtualEvent);
     console.log(events);
 
     const eventIds = events.map(event => event.id);
+    const eventMap = new Map(events.map(event => [event.id, event.name]));
 
     const { data: guests, error } = await supabase
       .from('event_guest')
@@ -113,8 +120,16 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
         is_client_company,
         tipo_usuario,
         tipo_membresia,
-        executive:executive_id (name, last_name, position),
-        company:company_id (razon_social)
+        guest: guest_id (
+          name,
+          is_user,
+          company_razon_social,
+          tipo_usuario,
+          tipo_membresia,
+          company: company_id (razon_social),
+          executive: executive_id (name, last_name, user_type, observation)
+          ),
+        event_id
       `)
       .in('event_id', eventIds)
 
@@ -133,16 +148,17 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
     });
 
     // @ts-expect-error - TS doesn't know that sortedGuests is an array of SupabaseGuest
-    const formattedGuests: ReportGuest[] = sortedGuests.map((guest: SupabaseGuest) => ({
-      id: guest.id,
-      name: guest.is_user && guest.executive? `${guest.executive.name} ${guest.executive.last_name}`.trim(): guest.name || '',
-      position: guest.is_user ? guest.executive?.position || '' : guest.position || '',
-      company: guest.is_client_company && guest.company ? guest.company.razon_social : guest.company_razon_social || '',
-      registered: guest.registered,
-      assisted: guest.assisted,
-      virtual_session_time: guest.virtual_session_time || 0,
-      tipo_usuario: guest.tipo_usuario || '',
-      tipo_membresia: guest.tipo_membresia || '',
+    const formattedGuests: ReportGuest[] = sortedGuests.map((eventGuest: SupabaseGuest) => ({
+      id: eventGuest.id,
+      name: eventGuest.is_user && eventGuest.guest?.executive? `${eventGuest.guest?.executive.name} ${eventGuest.guest?.executive.last_name}`.trim(): eventGuest.name || '',
+      position: eventGuest.is_user ? eventGuest.guest?.executive?.position || '' : eventGuest.position || '',
+      company: eventGuest.guest?.is_user ? eventGuest.guest.company?.razon_social : eventGuest.guest?.company_razon_social || " ",
+      registered: eventGuest.registered,
+      assisted: eventGuest.assisted,
+      virtual_session_time: eventGuest.virtual_session_time || 0,
+      tipo_usuario: eventGuest.guest?.is_user ? eventGuest.guest?.executive?.user_type : eventGuest.guest?.tipo_usuario,
+      tipo_membresia: eventGuest.guest?.tipo_membresia || "",
+      eventName: eventMap.get(eventGuest.event_id) || '',
     }))
 
     setEventData({
@@ -192,20 +208,15 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
         (attendedFilter === "No" && !invitado.assisted)
       const cumpleBusqueda = searchQuery === '' || 
         invitado.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        invitado.company.toLowerCase().includes(searchQuery.toLowerCase())
+        (invitado.company && invitado.company.toLowerCase().includes(searchQuery.toLowerCase()))
 
-      const cumpleTiempo = timeFilter === "Todos" ||
-      (timeFilter === "30" &&  invitado.virtual_session_time <= 30) || 
-      (timeFilter === "60" &&  invitado.virtual_session_time <= 60 &&  invitado.virtual_session_time > 30) || 
-      (timeFilter === "90" &&  invitado.virtual_session_time <= 90 &&  invitado.virtual_session_time > 60) || 
-      (timeFilter === "120" && invitado.virtual_session_time <= 120 && invitado.virtual_session_time > 90)
 
-      return cumpleRegistro && cumpleAsistencia && cumpleBusqueda && cumpleTiempo
+      return cumpleRegistro && cumpleAsistencia && cumpleBusqueda
     })
   }
 
   const datosFiltradosA = useMemo(() => filtrarPorEmpresa(eventData), [eventData, companySeleccionada])
-  const datosFiltradosB = useMemo(() => datosFiltradosA ? filtrarTabla(datosFiltradosA.invitados) : [], [datosFiltradosA, registeredFilter, attendedFilter, timeFilter, searchQuery])
+  const datosFiltradosB = useMemo(() => datosFiltradosA ? filtrarTabla(datosFiltradosA.invitados) : [], [datosFiltradosA, registeredFilter, attendedFilter, searchQuery])
 
   const paginatedGuests = datosFiltradosB.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
   const totalPages = Math.ceil(datosFiltradosB.length / itemsPerPage)
@@ -263,21 +274,6 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="time-filter" className="text-sm font-medium">Tiempo de conexión</label>
-                  <Select onValueChange={setTimeFilter} defaultValue="Todos">
-                    <SelectTrigger id="time-filter" className="w-full sm:w-[120px]">
-                      <SelectValue placeholder="Total" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Todos">Total</SelectItem>
-                      <SelectItem value="30">0-30 min</SelectItem>
-                      <SelectItem value="60">30-60 min</SelectItem>
-                      <SelectItem value="90">60-90 min</SelectItem>
-                      <SelectItem value="120">90-120 min</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
             </div>
 
@@ -289,11 +285,9 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                     <TableHead className="w-[150px] min-w-[150px]">Empresa</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Tipo de usuario</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Tipo de membresía</TableHead>
+                    <TableHead className="w-[100px] min-w-[100px]">Evento</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Registrado</TableHead>
                     <TableHead className="w-[100px] min-w-[100px]">Asistió</TableHead>
-                    { showConnectionTimeChart &&
-                    <TableHead className="w-[150px] min-w-[150px]">Tiempo de Conexión</TableHead>
-                    }
                     
                   </TableRow>
                 </TableHeader>
@@ -304,11 +298,9 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                       <TableCell>{invitado.company}</TableCell>
                       <TableCell>{invitado.tipo_usuario}</TableCell>
                       <TableCell>{invitado.tipo_membresia}</TableCell>
+                      <TableCell>{invitado.eventName}</TableCell>
                       <TableCell>{invitado.registered ? 'Sí' : 'No'}</TableCell>
                       <TableCell>{invitado.assisted ? 'Sí' : 'No'}</TableCell>
-                      { showConnectionTimeChart &&
-                      <TableCell>{formatTime(invitado.virtual_session_time)}</TableCell>
-                      }
                     </TableRow>
                   ))}
                 </TableBody>
