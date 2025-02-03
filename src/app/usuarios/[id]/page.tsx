@@ -31,6 +31,9 @@ type Executive = {
   mobile_phone: string
   start_date: string
   end_date: string | null
+  apodo: string
+  estimado: string
+  observation: boolean
   company: {
     razon_social: string
   }
@@ -176,11 +179,15 @@ export default function ExecutiveDetailsPage() {
               <p className="flex items-center">
                 Reuniones SAE: {formatSaeMeetings(executive.sae_meetings)}
               </p>
+              <p className="flex items-center">
+              En alerta: {executive.observation ? "Si" : "No"}
+              </p>
               <p className="flex items-center">Status: <Badge variant={executive.active ? "default" : "secondary"}>{executive.active ? 'Activo' : 'No activo'}</Badge></p>
               {executive.reemplaza_a && executive.reemplazado_executive && (
                 <p><User className="inline mr-2" /> Reemplaza a: {`${executive.reemplazado_executive.name} ${executive.reemplazado_executive.last_name}`}</p>
               )}
             </div>
+            
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2 ">
@@ -204,6 +211,12 @@ export default function ExecutiveDetailsPage() {
               </p>
               <p className="flex items-center">
               Celular de secretaria: {formatPhoneNumber(executive.assistant?.cc_mobile_phone, executive.assistant?.mobile_phone)}
+              </p>
+              <p className="flex items-center">
+              Estimado: {executive.estimado}
+              </p>
+              <p className="flex items-center">
+              Apodo: {executive.apodo}
               </p>
             </div>
             <div className="space-y-2">

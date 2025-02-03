@@ -101,6 +101,9 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
   const [mobilePhone, setMobilePhone] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [apodo, setApodo] = useState('')
+  const [estimado, setEstimado] = useState('')
+  const [observation, setObservation] = useState(false)
   const [assistants, setAssistants] = useState<Assistant[]>([])
   const [executives, setExecutives] = useState<Executive[]>([])
   const [loading, setLoading] = useState(true)
@@ -187,6 +190,9 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
       setMobilePhone(executive.mobile_phone)
       setStartDate(executive.start_date)
       setEndDate(executive.end_date)
+      setEstimado(executive.estimado)
+      setApodo(executive.apodo)
+      setObservation(executive.observation)
       setMembershipId(executive.membership_id?.toString() || '')
       setSaeMeetings(executive.sae_meetings || [])
       await fetchAssistants(executive.company_id)
@@ -247,6 +253,9 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
       mobile_phone: mobilePhone,
       start_date: startDate,
       end_date: endDate,
+      estimado: estimado,
+      apodo: apodo,
+      observation: observation,
       membership_id: parseInt(membershipId) || null,
       sae_meetings: saeMeetings,
     }
@@ -533,6 +542,33 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="estimado">Estimado</Label>
+        <Input
+          id="estimado"
+          type="text"
+          value={estimado}
+          onChange={(e) => setEstimado(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="apodo">Apodo</Label>
+        <Input
+          id="apodo"
+          type="text"
+          value={apodo}
+          onChange={(e) => setApodo(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="observation">En alerta</Label>
+        <div></div>
+        <Checkbox
+          id={"observation"}
+          checked={observation}
+          onCheckedChange={() => setObservation(!observation)}
         />
       </div>
       <Button type="submit">{executiveId ? 'Actualizar' : 'Agregar Nuevo Usuario'}</Button>

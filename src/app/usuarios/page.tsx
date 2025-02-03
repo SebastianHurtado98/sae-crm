@@ -29,6 +29,9 @@ type Executive = {
   mobile_phone: string
   start_date: string
   end_date: string | null
+  apodo: string
+  estimado: string
+  observation: boolean
   company: {
     razon_social: string
   }
@@ -202,6 +205,9 @@ export default function UsuariosPage() {
             <TableHead>Celular</TableHead>
             <TableHead>Fecha de ingreso</TableHead>
             <TableHead>Fecha de baja</TableHead>
+            <TableHead>Estimado</TableHead>
+            <TableHead>Apodo</TableHead>
+            <TableHead>En alerta</TableHead>
             <TableHead>Reuniones SAE</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
@@ -227,6 +233,9 @@ export default function UsuariosPage() {
               <TableCell>{formatPhoneNumber(executive.mobile_phone_cc, executive.mobile_phone)}</TableCell>
               <TableCell>{convertDateFormat(executive.start_date)}</TableCell>
               <TableCell>{executive.end_date || 'N/A'}</TableCell>
+              <TableCell>{executive.estimado}</TableCell>
+              <TableCell>{executive.apodo}</TableCell>
+              <TableCell>{executive.observation ? "Si" : "No"}</TableCell>
               <TableCell>{formatSaeMeetings(executive.sae_meetings)}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
