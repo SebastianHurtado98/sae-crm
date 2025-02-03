@@ -61,6 +61,7 @@ export function EventReportTab({ eventId, defaultCompany = "Todas", showCompanyF
   const [searchQuery, setSearchQuery] = useState('')
   const [registeredFilter, setRegisteredFilter] = useState("Todos")
   const [attendedFilter, setAttendedFilter] = useState("Todos")
+  const [timeFilter, setTimeFilter] = useState("Todos")
   const [showConnectionTimeChart, setShowConnectionTimeChart] = useState(false)
   const itemsPerPage = 10
 
@@ -181,12 +182,19 @@ export function EventReportTab({ eventId, defaultCompany = "Todas", showCompanyF
       const cumpleBusqueda = searchQuery === '' || 
         invitado.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
         invitado.company.toLowerCase().includes(searchQuery.toLowerCase())
-      return cumpleRegistro && cumpleAsistencia && cumpleBusqueda
+
+      const cumpleTiempo = timeFilter === "Todos" ||
+      (timeFilter === "30" &&  invitado.virtual_session_time <= 30) || 
+      (timeFilter === "60" &&  invitado.virtual_session_time <= 60 &&  invitado.virtual_session_time > 30) || 
+      (timeFilter === "90" &&  invitado.virtual_session_time <= 90 &&  invitado.virtual_session_time > 60) || 
+      (timeFilter === "120" && invitado.virtual_session_time <= 120 && invitado.virtual_session_time > 90)
+
+      return cumpleRegistro && cumpleAsistencia && cumpleBusqueda && cumpleTiempo
     })
   }
 
   const datosFiltradosA = useMemo(() => filtrarPorEmpresa(eventData), [eventData, companySeleccionada])
-  const datosFiltradosB = useMemo(() => datosFiltradosA ? filtrarTabla(datosFiltradosA.invitados) : [], [datosFiltradosA, registeredFilter, attendedFilter, searchQuery])
+  const datosFiltradosB = useMemo(() => datosFiltradosA ? filtrarTabla(datosFiltradosA.invitados) : [], [datosFiltradosA, registeredFilter, attendedFilter, timeFilter, searchQuery])
 
   const paginatedGuests = datosFiltradosB.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
   const totalPages = Math.ceil(datosFiltradosB.length / itemsPerPage)
@@ -304,6 +312,21 @@ export function EventReportTab({ eventId, defaultCompany = "Todas", showCompanyF
                       <SelectItem value="Todos">Total</SelectItem>
                       <SelectItem value="Sí">Sí</SelectItem>
                       <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <label htmlFor="time-filter" className="text-sm font-medium">Tiempo de conexión</label>
+                  <Select onValueChange={setTimeFilter} defaultValue="Todos">
+                    <SelectTrigger id="time-filter" className="w-full sm:w-[120px]">
+                      <SelectValue placeholder="Total" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Todos">Total</SelectItem>
+                      <SelectItem value="30">0-30 min</SelectItem>
+                      <SelectItem value="60">30-60 min</SelectItem>
+                      <SelectItem value="90">60-90 min</SelectItem>
+                      <SelectItem value="120">90-120 min</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

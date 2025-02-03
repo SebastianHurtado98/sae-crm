@@ -230,7 +230,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             {event.event_type !== "Virtual" && (
             <SelectItem value="escanear-qr">Escanear QR</SelectItem>
             )}            
-            <SelectItem value="reporte">Reporte</SelectItem>
+            {event.event_type !== "Presencial" && (
+              <SelectItem value="reporte">Reporte</SelectItem>
+            )}
           </SelectContent>
         </Select>
       </div>
@@ -243,7 +245,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             {event.event_type !== "Virtual" && (
         <TabsTrigger value="escanear-qr">Escanear QR</TabsTrigger>
         )}
-        <TabsTrigger value="reporte">Reporte</TabsTrigger>
+        {event.event_type !== "Presencial" && (
+        <TabsTrigger value="reporte">Informe de sesion</TabsTrigger>
+        )}
       </TabsList>
         
         <TabsContent value="invitados">
