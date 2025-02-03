@@ -31,6 +31,9 @@ type EventGuest = {
   virtual_session_time: number | null
   registered: boolean
   assisted: boolean
+  guest?: {
+    email: string
+  }
 }
 
 
@@ -38,9 +41,17 @@ const calculateStats = (macroEventId: number, events: Event[], eventGuests: Even
   const macroEventEvents = events.filter((event) => event.macro_event_id === macroEventId)
   const macroEventGuests = eventGuests.filter((guest) => macroEventEvents.some((event) => event.id === guest.event_id))
 
-  const totalInvitados = macroEventGuests.length
-  const totalRegistrados = macroEventGuests.filter((guest) => guest.registered).length
-  const totalAsistentes = macroEventGuests.filter((guest) => guest.assisted).length
+  const uniqueInvitados = new Set(macroEventGuests.map((eventGuest) => eventGuest.guest?.email));
+  const uniqueRegistrados = new Set(
+    macroEventGuests.filter((eventGuest) => eventGuest.registered).map((eventGuest) => eventGuest.guest?.email)
+  );
+  const uniqueAsistentes = new Set(
+    macroEventGuests.filter((eventGuest) => eventGuest.assisted).map((eventGuest) => eventGuest.guest?.email)
+  );
+
+  const totalInvitados = uniqueInvitados.size;
+  const totalRegistrados = uniqueRegistrados.size;
+  const totalAsistentes = uniqueAsistentes.size;
 
   const eventStats = macroEventEvents.map((event) => {
     const eventGuests = macroEventGuests.filter((guest) => guest.event_id === event.id)
@@ -107,7 +118,8 @@ function MacroReporteContent() {
     const { data: guests, error: guestError } = await supabase
       .from('event_guest')
       .select(`
-        *
+        *,
+        guest: guest_id (email)
       `)
       .in('event_id', eventIds)
 

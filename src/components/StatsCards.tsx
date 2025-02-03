@@ -12,7 +12,7 @@ export function StatsCards({ totals }: StatsCardsProps) {
   const { totalInvitados, totalRegistrados, totalAsistentes } = totals
 
   const porcentajeRegistrados = ((totalRegistrados / totalInvitados) * 100).toFixed(2)
-  const porcentajeAsistentes = ((totalAsistentes / totalInvitados) * 100).toFixed(2)
+  const porcentajeAsistentes = ((totalAsistentes / totalRegistrados) * 100).toFixed(2)
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
