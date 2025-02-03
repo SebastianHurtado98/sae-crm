@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { SearchableSelectFilterGuestCompany } from './SearchableSelectFilterGuestCompany'
 
 type SupabaseGuest = {
   id: string
@@ -69,6 +69,7 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
   const [searchQuery, setSearchQuery] = useState('')
   const [registeredFilter, setRegisteredFilter] = useState("Todos")
   const [attendedFilter, setAttendedFilter] = useState("Todos")
+  const [guestsName, setGuestsName] = useState<string[]>([])
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -161,6 +162,9 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
       eventName: eventMap.get(eventGuest.event_id) || '',
     }))
 
+    const guestsName = [...new Set(formattedGuests.map(guest => guest.name))];
+    setGuestsName(guestsName)
+
     setEventData({
       totalInvitados: formattedGuests.length,
       totalRegistrados: formattedGuests.filter(guest => guest.registered).length,
@@ -240,13 +244,14 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
           <CardContent>
             {/* Buscador y filtros */}
             <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0 sm:space-x-4 mb-4">
-              <Input
-                type="text"
-                placeholder="Buscar invitados..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:max-w-xs"
-              />
+              <div>
+                <h4 className="text-md font-medium">Buscar invitados o empresas</h4>
+                <SearchableSelectFilterGuestCompany
+                  onSelect={(value) => setSearchQuery(value)}
+                  label="empresa"
+                  guestsName={guestsName}
+                />
+              </div>
               <div className="flex flex-col sm:flex-row sm:items-end space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex flex-col space-y-2">
                   <label htmlFor="registered-filter" className="text-sm font-medium">Se registró</label>
