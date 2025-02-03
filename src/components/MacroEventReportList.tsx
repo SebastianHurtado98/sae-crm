@@ -150,7 +150,7 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
     // @ts-expect-error - TS doesn't know that sortedGuests is an array of SupabaseGuest
     const formattedGuests: ReportGuest[] = sortedGuests.map((eventGuest: SupabaseGuest) => ({
       id: eventGuest.id,
-      name: eventGuest.is_user && eventGuest.guest?.executive? `${eventGuest.guest?.executive.name} ${eventGuest.guest?.executive.last_name}`.trim(): eventGuest.name || '',
+      name: eventGuest.guest?.is_user ? `${eventGuest.guest?.executive?.name} ${eventGuest.guest?.executive?.last_name}` : eventGuest.guest?.name ? eventGuest.guest?.name : eventGuest.name,
       position: eventGuest.is_user ? eventGuest.guest?.executive?.position || '' : eventGuest.position || '',
       company: eventGuest.guest?.is_user ? eventGuest.guest.company?.razon_social : eventGuest.guest?.company_razon_social || " ",
       registered: eventGuest.registered,
