@@ -43,7 +43,7 @@ type EventGuest = {
     }
     executive? : {
       name: string
-      lastName: string
+      last_name: string
     }
   }
 }
@@ -164,7 +164,7 @@ function MacroReporteContent() {
 
   const filtrarTabla = (invitados: EventGuest[]) => {
     return invitados.filter(invitado => {
-      const name = invitado.guest?.is_user ? `${invitado.guest?.executive?.name} ${invitado.guest?.executive?.lastName}` : invitado.guest?.name ? invitado.guest?.name : invitado.name
+      const name = invitado.guest?.is_user ? `${invitado.guest?.executive?.name} ${invitado.guest?.executive?.last_name}` : invitado.guest?.name ? invitado.guest?.name : invitado.name
       const company = invitado.guest?.is_user ? invitado.guest?.company?.razon_social : invitado.guest?.company_razon_social || " "
 
       const cumpleBusqueda = searchQuery === '' || 
