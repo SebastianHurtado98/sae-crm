@@ -11,8 +11,8 @@ type StatsCardsProps = {
 export function StatsCards({ totals }: StatsCardsProps) {
   const { totalInvitados, totalRegistrados, totalAsistentes } = totals
 
-  const porcentajeRegistrados = ((totalRegistrados / totalInvitados) * 100).toFixed(2)
-  const porcentajeAsistentes = ((totalAsistentes / totalRegistrados) * 100).toFixed(2)
+  const porcentajeRegistrados = totalInvitados === 0 ? "0.00" : ((totalRegistrados / totalInvitados) * 100).toFixed(2)
+  const porcentajeAsistentes = totalRegistrados === 0 ? "0.00" : ((totalAsistentes / totalRegistrados) * 100).toFixed(2)
 
   return (
     <div className="grid gap-4 md:grid-cols-3">

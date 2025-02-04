@@ -28,7 +28,11 @@ export function EventsReportTable({ eventStats }: EventsTableProps) {
           <TableRow key={event.eventId}>
             <TableCell>{event.eventName}</TableCell>
             <TableCell>{event.registrados}</TableCell>
-            <TableCell>{event.asistentes} ({((event.asistentes / event.registrados) * 100).toFixed(2)}%)</TableCell>
+            <TableCell>
+              {event.asistentes} ({
+                event.registrados === 0 ? "0.00" : ((event.asistentes / event.registrados) * 100).toFixed(2)
+              }%)
+              </TableCell>
           </TableRow>
         ))}
       </TableBody>

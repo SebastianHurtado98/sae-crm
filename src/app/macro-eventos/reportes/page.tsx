@@ -7,6 +7,7 @@ import { StatsCards } from "@/components/StatsCards"
 import { MacroEventReportList } from "@/components/MacroEventReportList"
 import { useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase"
+import { SearchableSelectFilterGuestCompany } from "@/components/SearchableSelectFilterGuestCompany"
 
 type MacroEvent = {
   id: number
@@ -31,8 +32,19 @@ type EventGuest = {
   virtual_session_time: number | null
   registered: boolean
   assisted: boolean
+  company_razon_social: string
   guest?: {
+    name: string
     email: string
+    is_user: boolean
+    company_razon_social: string
+    company? :{
+      razon_social: string
+    }
+    executive? : {
+      name: string
+      lastName: string
+    }
   }
 }
 
@@ -85,6 +97,8 @@ function MacroReporteContent() {
   const [events, setEvents] = useState<Event[]>([])
   const [eventGuests, setEventGuests] = useState<EventGuest[]>([])
   
+  const [searchQuery, setSearchQuery] = useState('')
+  const [guestsName, setGuestsName] = useState<string[]>([])
 
   const fetchMacroEvent = useCallback(async () => {
     const { data, error } = await supabase
@@ -119,7 +133,7 @@ function MacroReporteContent() {
       .from('event_guest')
       .select(`
         *,
-        guest: guest_id (email)
+        guest: guest_id (name, email, is_user, company_razon_social, company: company_id (razon_social), executive: executive_id (name, last_name, user_type))
       `)
       .in('event_id', eventIds)
 
@@ -127,6 +141,10 @@ function MacroReporteContent() {
       console.error('Error fetching event data:', guestError)
       return
     } else {
+      const guestsName = [...new Set(guests.map(eventGuest => 
+        eventGuest.guest?.is_user ? `${eventGuest.guest?.executive?.name} ${eventGuest.guest?.executive?.last_name}` : eventGuest.guest?.name ? eventGuest.guest?.name : eventGuest.name || "z",
+      ))];
+      setGuestsName(guestsName)
       setEventGuests(guests || [])
     }
 
@@ -143,12 +161,33 @@ function MacroReporteContent() {
     }
   }, [macroEventId]);
 
+
+  const filtrarTabla = (invitados: EventGuest[]) => {
+    return invitados.filter(invitado => {
+      const name = invitado.guest?.is_user ? `${invitado.guest?.executive?.name} ${invitado.guest?.executive?.lastName}` : invitado.guest?.name ? invitado.guest?.name : invitado.name
+      const company = invitado.guest?.is_user ? invitado.guest?.company?.razon_social : invitado.guest?.company_razon_social || " "
+
+      const cumpleBusqueda = searchQuery === '' || 
+      name.toLowerCase().includes(searchQuery.toLowerCase()) 
+        || (company && company.toLowerCase().includes(searchQuery.toLowerCase()))
+
+      return cumpleBusqueda
+    })
+  }
+
+  const filterGuests = useMemo(() => {
+    const filterGuests = filtrarTabla(eventGuests)
+    console.log("filterGuests", filterGuests)
+    return filterGuests
+
+  }, [macroEventId, events, eventGuests, searchQuery])
+
   const stats = useMemo(() => {
     if (macroEventId) {
-      return calculateStats(Number.parseInt(macroEventId, 10), events, eventGuests)
+      return calculateStats(Number.parseInt(macroEventId, 10), events, filterGuests)
     }
     return null
-  }, [macroEventId, events, eventGuests])
+  }, [macroEventId, events, eventGuests, filterGuests])
 
   return (
     <div className="container mx-auto py-10">
@@ -169,6 +208,13 @@ function MacroReporteContent() {
           ))}
         </SelectContent>
       </Select>
+      <div>
+        <h4 className="text-md font-medium">Buscador</h4>
+        <SearchableSelectFilterGuestCompany
+          onSelect={(value) => setSearchQuery(value)}
+          guestsName={guestsName}
+        />
+      </div>
 
       {stats && (
         <>
@@ -184,7 +230,7 @@ function MacroReporteContent() {
       )}
 
       <div className="my-8">
-          <MacroEventReportList macroEventId={parseInt(macroEventId)}/>        
+          <MacroEventReportList macroEventId={parseInt(macroEventId)} searchQuery={searchQuery}/>        
       </div>
     </div>
   )

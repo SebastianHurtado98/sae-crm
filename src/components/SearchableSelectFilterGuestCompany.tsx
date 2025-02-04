@@ -14,11 +14,10 @@ type Selectable = {
 
 type SearchableSelectFilterProps = {
   onSelect: (value: string) => void
-  label: string
   guestsName: string[]
 }
 
-export function SearchableSelectFilterGuestCompany({ onSelect, label, guestsName }: SearchableSelectFilterProps) {
+export function SearchableSelectFilterGuestCompany({ onSelect, guestsName }: SearchableSelectFilterProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [companies, setCompanies] = useState<Selectable[]>([])
@@ -91,14 +90,14 @@ export function SearchableSelectFilterGuestCompany({ onSelect, label, guestsName
         aria-expanded={isOpen}
         className="w-full justify-between"
       >
-        {selectedCompany ? selectedCompany.razon_social : "Todos"} {/* Update 3 */}
+        {selectedCompany ? selectedCompany.razon_social : "Buscar empresa o invitado"} {/* Update 3 */}
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       {isOpen && (
         <div className="absolute mt-1 w-full z-10 bg-white border border-gray-300 rounded-md shadow-lg">
           <Input
             type="text"
-            placeholder={`Buscar ${label.toLowerCase()}...`}
+            placeholder={`Buscar empresa o invitado ...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-2"
