@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import * as XLSX from 'xlsx'
 
 type SupabaseGuest = {
   id: string
@@ -228,6 +229,42 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
     return <div>No se pudieron cargar los datos del evento.</div>
   }
 
+  const handleExcelClick = async () => {    
+    if (datosFiltradosB) {
+      try {          
+        const enrichedData = datosFiltradosB.map((guest) => ({          
+          name: guest.name,
+          company: guest.company,
+          tipo_usuario: guest.tipo_usuario,
+          tipo_membresia: guest.tipo_membresia,
+          eventName: guest.eventName,
+          registered: guest.registered === null ? false : guest.registered,
+          assisted: guest.assisted === null ? false : guest.assisted,
+          virtual_session_time: guest.virtual_session_time
+        }));
+  
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(enrichedData);
+        XLSX.utils.book_append_sheet(wb, ws, "Macro-Reporte");
+  
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Macro-Reporte.xlsx';
+        link.style.display = 'none';
+  
+        document.body.appendChild(link);
+        link.click();
+  
+        document.body.removeChild(link);
+      } catch (parseError) {
+        console.error('Error generating Excel:', parseError);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Lista de invitados */}
@@ -265,6 +302,9 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
                       <SelectItem value="No">No</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="flex ml-auto space-x-2">
+                  <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
                 </div>
               </div>
             </div>
