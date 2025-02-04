@@ -110,15 +110,6 @@ export function SearchableSelectFilterGuestCompany({ onSelect, guestsName }: Sea
                 !selectedCompany && "bg-blue-100"
               )}
             >
-              <div className="flex items-center">
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    !selectedCompany ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                Todos
-              </div>
             </li>
             {companies.length === 0 ? (
               <li className="px-2 py-1 text-gray-500">No se encontraron resultados.</li>

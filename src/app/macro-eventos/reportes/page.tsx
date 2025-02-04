@@ -209,7 +209,7 @@ function MacroReporteContent() {
         </SelectContent>
       </Select>
       <div>
-        <h4 className="text-md font-medium">Buscador</h4>
+        <h4 className="text-md font-medium">Buscar empresa o invitado</h4>
         <SearchableSelectFilterGuestCompany
           onSelect={(value) => setSearchQuery(value)}
           guestsName={guestsName}
