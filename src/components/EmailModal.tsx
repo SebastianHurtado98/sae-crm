@@ -44,6 +44,9 @@ export function EmailConfirmationModal({ isOpen, onClose, onConfirm, guestCount,
   const hasAlreadySentEmail = selectedGuestsData.some(
     (guest) => guest.lastEmailSent === "registro-p" || guest.lastEmailSent === "registro-v"
   );
+  const hasAlreadySentReminderEmail = selectedGuestsData.some(
+    (guest) => guest.lastEmailSent === "recordatorio-p" || guest.lastEmailSent === "recordatorio-v"
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -56,6 +59,9 @@ export function EmailConfirmationModal({ isOpen, onClose, onConfirm, guestCount,
           {hasAlreadySentEmail && (
             <p style={{ color: 'red' }}>Advertencia: está seleccionando usuarios a los que ya se les envió correo de registro</p>
           )}
+          {hasAlreadySentReminderEmail && (
+            <p style={{ color: 'red' }}>Advertencia: está seleccionando usuarios a los que ya se les envió correo de recordatorio</p>
+          )}
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de correo</label>
             <Select value={emailType} onValueChange={setEmailType}>
@@ -65,7 +71,9 @@ export function EmailConfirmationModal({ isOpen, onClose, onConfirm, guestCount,
               <SelectContent>
                 <SelectItem value="registro-p">Registro presencial</SelectItem>
                 <SelectItem value="registro-v">Registro virtual</SelectItem>
-              </SelectContent>
+                <SelectItem value="recordatorio-v">Recordatorio virtual</SelectItem>
+                <SelectItem value="recordatorio-p">Recordatorio presencial</SelectItem>
+                </SelectContent>
             </Select>
           </div>
         </div>

@@ -28,7 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           to: [{ email: p.to }],
           dynamicTemplateData: p.dynamicTemplateData,
         })),
-        from: "contactasae@apoyoconsultoria.com",
+        from: {
+          email: "contactasae@apoyoconsultoria.com",
+          name: "SAE | APOYO Consultoría"
+        },
         templateId: template_id       
     }
   
