@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { SearchableSelect } from './SearchableSelect'
+import { UserTypeSelector } from './UserTypeSelector'
 
 type ExecutiveFormProps = {
   executiveId?: number
@@ -59,24 +60,6 @@ const countries: CountryOption[] = [
   // Add more countries as needed
 ]
 
-const userTypes = [
-  "Titular",
-  "Cupo de cortesía",
-  "Cupo adicional",
-  "Cortesía de reuniones",
-  "Cortesía de reportes",
-  "Titular adicional",
-  "Titular virtual",
-  "Cliente potencial",
-  "Titular Axpen",
-  "Titular Vitalicio",
-  "Titular indefinido",
-  "Invitado por transición laboral",
-  "Cliente beca",
-  "Reemplazo",
-  "AC",
-  "Otros",
-]
 
 export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
   const [dni, setDni] = useState('')
@@ -433,19 +416,7 @@ export function ExecutiveForm({ executiveId }: ExecutiveFormProps) {
         />
       </div>
       <div>
-        <Label htmlFor="userType">Tipo de usuario</Label>
-        <Select value={userType} onValueChange={setUserType}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecciona un tipo de usuario" />
-          </SelectTrigger>
-          <SelectContent>
-            {userTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <UserTypeSelector value={userType} onValueChange={setUserType} />
       </div>
       <div>
         <Label>Reuniones SAE</Label>

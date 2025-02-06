@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+import { UserTypeSelector } from './UserTypeSelector'
+import { MembershipTypeSelector } from './MembershipTypeSelector'
 
 type Company = {
   id: number
@@ -265,22 +267,10 @@ export function CreateEventGuestForm({ eventId, onComplete }: CreateGuestFormPro
             />
           </div>
           <div>
-            <Label htmlFor="tipoUsuario">Tipo de usuario</Label>
-            <Input
-              id="tipoUsuario"
-              value={tipoUsuario}
-              onChange={(e) => setTipoUsuario(e.target.value)}
-              required
-            />
+            <UserTypeSelector value={tipoUsuario} onValueChange={setTipoUsuario} />
           </div>
           <div>
-            <Label htmlFor="tipoMembresia">Tipo de membresia</Label>
-            <Input
-              id="tipoMembresia"
-              value={tipoMembresia}
-              onChange={(e) => setTipoMembresia(e.target.value)}
-              required
-            />
+            <MembershipTypeSelector value={tipoMembresia} onValueChange={setTipoMembresia} />
           </div>
           <div>
             <Label htmlFor="reemplazaANombre">Reemplaza a (nombre y apellido)</Label>

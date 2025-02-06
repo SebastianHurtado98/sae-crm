@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { SearchableSelect } from './SearchableSelect'
 import { Textarea } from "@/components/ui/textarea"
+import { MembershipTypeSelector } from './MembershipTypeSelector'
 
 type MembershipFormProps = {
   membershipId?: number
@@ -20,19 +21,6 @@ type Company = {
   razon_social: string
 }
 
-const membershipTypes = [
-  "SAE Ejecutivo",
-  "SAE Reuniones",
-  "SAE Virtual",
-  "SAE Virtual Nuevo",
-  "SAE Virtual Power",
-  "SAE Básico",
-  "SAE Básico Nuevo",
-  "SAE Básico reuniones",
-  "SAE Completo",
-  "SAE Especial",
-  "AC",
-]
 
 const paymentMethods = [
   "Mensual",
@@ -223,17 +211,7 @@ export function MembershipForm({ membershipId }: MembershipFormProps) {
       </div>
 
       <div>
-        <Label htmlFor="membershipType">Tipo de membresía</Label>
-        <Select value={membershipType} onValueChange={setMembershipType}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecciona el tipo de membresía" />
-          </SelectTrigger>
-          <SelectContent>
-            {membershipTypes.map((type) => (
-              <SelectItem key={type} value={type}>{type}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MembershipTypeSelector value={membershipType} onValueChange={setMembershipType} />
       </div>
 
       <div className="flex items-center space-x-2">
