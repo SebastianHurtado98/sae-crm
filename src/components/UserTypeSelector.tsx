@@ -18,6 +18,7 @@ export const userTypes = [
   "Reemplazo",
   "AC",
   "Otros",
+  "Free Trial",
 ]
 
 interface UserTypeSelectorProps {
