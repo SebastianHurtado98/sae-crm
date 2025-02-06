@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button"
 import { supabase } from '@/lib/supabase'
 import * as XLSX from 'xlsx'
 import { toast } from "@/hooks/use-toast"
+import { userTypes } from '../UserTypeSelector'
+import { membershipTypes } from '../MembershipTypeSelector'
 
 export function ImportExternals({ listId }: { listId: number }) {
   const [file, setFile] = useState<File | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
 
   // Manejadores para drag and drop
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -68,18 +71,36 @@ export function ImportExternals({ listId }: { listId: number }) {
         'Tipo de membresia': string
       }>
 
-      const guests = jsonData.map((row) => ({
+      const newErrors: string[] = []
+      const guests = jsonData.map((row) => {
+        const userType = userTypes.find((type) => type.toLowerCase() === row["Tipo de usuario"].toLowerCase().trim())
+        const membershipType = membershipTypes.find((type) => type.toLowerCase() === row["Tipo de membresia"].toLowerCase().trim())
+
+        if (!userType) {
+          newErrors.push(`Error en el correo ${row.Correo}: Tipo de usuario "${row["Tipo de usuario"]}" no válido. `)
+        }
+        if (!membershipType) {
+          newErrors.push(`Error en el correo ${row.Correo}: Tipo de membresía "${row["Tipo de membresia"]}" no válido. `)
+        }
+
+        return {
         list_id: listId,
         company_razon_social: row.Empresa,
         name: row.Nombre.trim() + ' ' + row.Apellido.trim(),
         email: row.Correo.toLowerCase().trim(),
         position: row.Cargo,
-        tipo_usuario: row['Tipo de usuario'],
-        tipo_membresia: row['Tipo de membresia'],        
+        tipo_usuario: userType || row['Tipo de usuario'],
+        tipo_membresia: membershipType || row['Tipo de membresia'],        
         is_user: false,
         is_client_company: false
-      }))
+        }
+      })
+
       
+      if (newErrors.length > 0) {
+        setErrors(newErrors)
+        return
+      }
 
       const { error } = await supabase
         .from('guest')
@@ -99,6 +120,7 @@ export function ImportExternals({ listId }: { listId: number }) {
           description: "Los invitados externos se han cargado correctamente.",
         })
         setFile(null)
+        setErrors([])
       }
     }
 
@@ -131,6 +153,20 @@ export function ImportExternals({ listId }: { listId: number }) {
       <Button onClick={handleFileUpload} disabled={!file}>
         Importar Excel
       </Button>
+      {errors.length > 0 && (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 rounded">
+          <h3 className="text-lg font-semibold text-red-800 mb-2">Error en el excel</h3>
+          <ul className="list-disc list-inside">
+            {errors.map((error, index) => (
+              <li key={index} className="text-red-700">
+                {error}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-red-700">Tipos de usuario válidos: {userTypes.join(", ")}</p>
+          <p className="text-red-700">Tipos de membresía válidos: {membershipTypes.join(", ")}</p>
+        </div>
+      )}
     </div>
   )
 }

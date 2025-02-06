@@ -9,6 +9,8 @@ import { toast } from "@/hooks/use-toast"
 import { SearchableSelectFilter } from '@/components/SearchableSelectFilter'
 import Select, { MultiValue } from 'react-select';
 import { Select as UISelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { membershipTypes } from '../MembershipTypeSelector'
+import { userTypes } from '../UserTypeSelector'
 
 type Option = { value: string, label: string };
 
@@ -50,39 +52,6 @@ const forumTypes = [
   "Segundo Sectorial"
 ]
 
-const membershipTypes = [
-  "SAE Ejecutivo",
-  "SAE Reuniones",
-  "SAE Virtual",
-  "SAE Virtual Nuevo",
-  "SAE Virtual Power",
-  "SAE Básico",
-  "SAE Básico Nuevo",
-  "SAE Básico reuniones",
-  "SAE Completo",
-  "SAE Especial",
-  "AC",
-  "Free trial",
-]
-
-const userTypes = [
-  "Titular",
-  "Cupo de cortesía",
-  "Cupo adicional",
-  "Cortesía de reuniones",
-  "Cortesía de reportes",
-  "Titular adicional",
-  "Titular virtual",
-  "Cliente potencial",
-  "Titular Axpen",
-  "Titular Vitalicio",
-  "Titular indefinido",
-  "Invitado por transición laboral",
-  "Cliente beca",
-  "Reemplazo",
-  "AC",
-  "Otros",
-]
 
 const saeMeetingsOptions = [
   "Encuentro mensual presencial",
