@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner'
 import { supabase } from '@/lib/supabase'
+import { oldQRMap } from './OldQRMap'
 
 interface ScanQRTabProps {
   eventId: number
@@ -88,34 +89,64 @@ export function ScanQRTab({ eventId, eventDate }: ScanQRTabProps) {
 
       }
       else if (prefix ==='E'){
-        const { data: guestData, error: fetchError } = await supabase
-        .from("event_guest")
-        .select("email")
-        .eq("id", qrData)
-        .single();
 
-      if (fetchError) {
-        console.error("Error fetching external guest email:", fetchError);
-        return;
-      }
+        const guestEmail = oldQRMap.find(item => item["qr-id"] === qrData)?.correo;
 
-      const guestEmail = guestData?.email;
       if (!guestEmail) {
         console.error("No email found for external guest with ID:", qrData);
         return;
       }
 
-      // Actualizar asistencia por email
-      const { error: updateError } = await supabase
-        .from("event_guest")
-        .update({ assisted: true })
-        .eq("event_id", eventId)
-        .eq("email", guestEmail);
+      const { data: guestData, error: guestError } = await supabase
+        .from('guest_email_summary')
+        .select('*')
+        .or(`guest_email.eq.${guestEmail},executive_email.eq.${guestEmail}`);
 
-      if (updateError) {
-        console.error("Error updating external guest by email:", updateError);
+      if (guestError) {
+        console.error('Error obteniendo guest:', guestError);
         return;
       }
+
+      if (!guestData || guestData.length === 0) {
+        console.warn('No se encontró ningún invitado con el QR proporcionado.');
+        return;
+      }
+
+      const existingGuest = guestData.find(guest => guest.event_id === eventId);
+      if (!existingGuest) {        
+        const { data: newGuest, error: createError } = await supabase
+          .from('event_guest')
+          .insert([
+            { 
+              event_id: eventId,
+              assisted: true, 
+              guest_id: guestData[0].guest_id
+            }  
+          ])
+          .select();
+    
+        if (createError) {
+          console.error('Error creando event_guest:', createError);
+          return;
+        }
+    
+        console.log('Nuevo event_guest creado:', newGuest);
+      } else {          
+        const { data: updatedGuest, error: updateError } = await supabase
+          .from('event_guest')
+          .update({ assisted: true }) 
+          .eq('id', existingGuest.event_guest_id)
+          .select();
+    
+        if (updateError) {
+          console.error('Error actualizando event_guest:', updateError);
+          return;
+        }
+    
+        console.log('event_guest actualizado:', updatedGuest);
+      }
+
+      
     } else if (prefix ==='C'){
 
       const { data: guestData, error: guestError } = await supabase
