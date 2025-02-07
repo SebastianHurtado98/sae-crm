@@ -79,7 +79,7 @@ export function ImportExternals({ listId }: { listId: number }) {
         if (!userType) {
           newErrors.push(`Error en el correo ${row.Correo}: Tipo de usuario "${row["Tipo de usuario"]}" no válido. `)
         }
-        if (!membershipType) {
+        if (!membershipType && row["Tipo de membresia"].trim() !== '') {
           newErrors.push(`Error en el correo ${row.Correo}: Tipo de membresía "${row["Tipo de membresia"]}" no válido. `)
         }
 
