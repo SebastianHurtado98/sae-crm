@@ -74,12 +74,12 @@ export function ImportExternals({ listId }: { listId: number }) {
       const newErrors: string[] = []
       const guests = jsonData.map((row) => {
         const userType = userTypes.find((type) => type.toLowerCase() === row["Tipo de usuario"].toLowerCase().trim())
-        const membershipType = membershipTypes.find((type) => type.toLowerCase() === row["Tipo de membresia"].toLowerCase().trim()) || row["Tipo de membresia"] == ''
+        const membershipType = membershipTypes.find((type) => type.toLowerCase() === row["Tipo de membresia"].toLowerCase().trim())
 
         if (!userType) {
           newErrors.push(`Error en el correo ${row.Correo}: Tipo de usuario "${row["Tipo de usuario"]}" no válido. `)
         }
-        if (!membershipType) {
+        if (!membershipType && row["Tipo de membresia"].trim() !== '') {
           newErrors.push(`Error en el correo ${row.Correo}: Tipo de membresía "${row["Tipo de membresia"]}" no válido. `)
         }
 
