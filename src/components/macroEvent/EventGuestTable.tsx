@@ -456,11 +456,11 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           : guest.name
   
         const qrData = guest.is_user 
-          ? `I-${guest.executive.id}`
-          : `E-${guest.id}`  
+          ? `C-${guest.executive.email}`
+          : `C-${guest.email}`  
   
         const guestCompany = guest.is_user 
-          ? guest.company.razon_social
+          ? guest.company?.razon_social || ""
           : guest.company_razon_social  
   
         try {
