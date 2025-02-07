@@ -23,9 +23,14 @@ export function ScanQRTab({ eventId, eventDate }: ScanQRTabProps) {
   useEffect(() => {
     const now = new Date()
     const eventDateTime = new Date(eventDate)
-    //eventDateTime.setHours(eventDateTime.getHours() + 3);
 
-    setEventPassed(now > eventDateTime)
+    const oneHourBefore = new Date(eventDateTime);
+    oneHourBefore.setHours(eventDateTime.getHours() - 1);
+  
+    const oneHourAfter = new Date(eventDateTime);
+    oneHourAfter.setHours(eventDateTime.getHours() + 1);
+  
+    setEventPassed(now < oneHourBefore || now > oneHourAfter);  
   }, [eventDate])
 
   const checkCameraPermission = async () => {
@@ -125,13 +130,6 @@ export function ScanQRTab({ eventId, eventDate }: ScanQRTabProps) {
     }
   }
   
-  if (eventPassed) {
-    return (
-      <div className="text-red-500 font-bold p-4 bg-red-100 border border-red-300 rounded">
-        Advertencia: Ya paso la fecha del evento, no se puede subir QR.
-      </div>
-    )
-  }
 
   if (hasPermission === false) {
     return <div className="text-red-500">Camera permission is required to scan QR codes.</div>
@@ -139,6 +137,11 @@ export function ScanQRTab({ eventId, eventDate }: ScanQRTabProps) {
 
   return (
     <div className="space-y-4">
+      { eventPassed && (
+      <div className="text-red-500 font-bold p-4 bg-red-100 border border-red-300 rounded">
+        Advertencia: No es la fecha y hora del evento.
+      </div>
+      )}
       {isScanning ? (
         <div className="space-y-4">
           <Scanner
