@@ -7,16 +7,26 @@ import { supabase } from '@/lib/supabase'
 
 interface ScanQRTabProps {
   eventId: number
+  eventDate: string
 }
 
-export function ScanQRTab({ eventId }: ScanQRTabProps) {
+export function ScanQRTab({ eventId, eventDate }: ScanQRTabProps) {
   const [isScanning, setIsScanning] = useState(false)
   const [scannedData, setScannedData] = useState<string | null>(null)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+  const [eventPassed, setEventPassed] = useState(false)
 
   useEffect(() => {
     checkCameraPermission()
   }, [])
+
+  useEffect(() => {
+    const now = new Date()
+    const eventDateTime = new Date(eventDate)
+    //eventDateTime.setHours(eventDateTime.getHours() + 3);
+
+    setEventPassed(now > eventDateTime)
+  }, [eventDate])
 
   const checkCameraPermission = async () => {
     try {
@@ -115,6 +125,13 @@ export function ScanQRTab({ eventId }: ScanQRTabProps) {
     }
   }
   
+  if (eventPassed) {
+    return (
+      <div className="text-red-500 font-bold p-4 bg-red-100 border border-red-300 rounded">
+        Advertencia: Ya paso la fecha del evento, no se puede subir QR.
+      </div>
+    )
+  }
 
   if (hasPermission === false) {
     return <div className="text-red-500">Camera permission is required to scan QR codes.</div>
@@ -131,7 +148,7 @@ export function ScanQRTab({ eventId }: ScanQRTabProps) {
           <Button onClick={stopScanning} className="w-full">Detener Escaneo</Button>
         </div>
       ) : (
-        <Button onClick={startScanning} className="w-full">Iniciar Escaneo de QR</Button>
+        <Button onClick={startScanning} className="w-full">Iniciar Escaneso de QR</Button>
       )}
       {scannedData && (
         <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded">

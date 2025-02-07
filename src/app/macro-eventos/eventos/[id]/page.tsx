@@ -298,7 +298,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         </TabsContent>
         
         <TabsContent value="escanear-qr">
-          <ScanQRTab eventId={parseInt(resolvedParams.id)} />
+          <ScanQRTab eventId={parseInt(resolvedParams.id)} eventDate={event.date_hour} />
         </TabsContent>
 
         <TabsContent value="reporte">
