@@ -47,12 +47,24 @@ export function ScanQRTab({ eventId }: ScanQRTabProps) {
 
       const [prefix, id] = barcodeText.split('-');
       if(prefix ==='I'){
+
+        const { data: guestData, error: guestError } = await supabase
+          .from('guest')
+          .select('id')
+          .eq('executive_id', id);
+
+        if (guestError) {
+          console.error('Error obteniendo guest_id:', guestError);
+          return;
+        }
+
+        const guestIds = guestData.map(guest => guest.id);
         
         const { error } = await supabase
         .from('event_guest')
         .update({ assisted: true })
         .eq('event_id', eventId)
-        .eq('executive_id',id)
+        .in('guest_id', guestIds);
       
         if (error) {
           console.error('Error fetching guests:', error)
