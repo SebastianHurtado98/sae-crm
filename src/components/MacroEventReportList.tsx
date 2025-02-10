@@ -233,14 +233,14 @@ export function MacroEventReportList({ macroEventId, defaultCompany = "Todas", s
     if (datosFiltradosB) {
       try {          
         const enrichedData = datosFiltradosB.map((guest) => ({          
-          name: guest.name,
-          company: guest.company,
+          nombre: guest.name,
+          compañía: guest.company,
           tipo_usuario: guest.tipo_usuario,
           tipo_membresia: guest.tipo_membresia,
-          eventName: guest.eventName,
-          registered: guest.registered === null ? false : guest.registered,
-          assisted: guest.assisted === null ? false : guest.assisted,
-          virtual_session_time: guest.virtual_session_time
+          evento: guest.eventName,
+          registrado: (guest.registered === null ? false : guest.registered) ? "Sí" : "No",
+          assistió: (guest.assisted === null ? false : guest.assisted) ? "Sí" : "No",
+          tiempo_sesion_virtual: guest.virtual_session_time
         }));
   
         const wb = XLSX.utils.book_new();
