@@ -23,6 +23,7 @@ type Event = {
   place: string
   register_open: boolean
   macro_event_id: number
+  zoom_webinar: string
 }
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -299,7 +300,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         </TabsContent>
              
         <TabsContent value="subir-asistencia">
-          <UploadZoomAttendance eventId={parseInt(resolvedParams.id)} />
+          <UploadZoomAttendance eventId={parseInt(resolvedParams.id)} zoombWebinar={event.zoom_webinar} />
         </TabsContent>
         
         <TabsContent value="escanear-qr">

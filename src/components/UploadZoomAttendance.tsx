@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Papa from 'papaparse';
 import { toast } from "@/hooks/use-toast";
 
-export function UploadZoomAttendance({ eventId }: { eventId: number }) {
+export function UploadZoomAttendance({ eventId, zoombWebinar }: { eventId: number, zoombWebinar: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [orphanedEmails, setOrphanedEmails] = useState<{email: string, username: string}[]>([]);
@@ -228,7 +228,7 @@ export function UploadZoomAttendance({ eventId }: { eventId: number }) {
       console.log('Correos huérfanos encontrados:', orphanedEmails);
       toast({
         title: "Correos huérfanos encontrados",
-        description: `Se encontraron ${orphanedEmails.length} correos en el CSV que no están en la tabla event_guest.`,
+        description: `Se encontraron ${orphanedEmails.length} correos de asistencia Zoom que no están en la tabla event_guest.`,
         variant: "default",
       });
     }
@@ -259,6 +259,95 @@ export function UploadZoomAttendance({ eventId }: { eventId: number }) {
     }
   };
 
+  const handleZoomSync = async () => {
+    try {
+      const response = await fetch('/api/zoom-token', {
+          method: 'POST',
+      });
+
+      if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message);
+      }
+
+      const data = await response.json();
+      console.log('Token:', data);
+
+      const webinarSuccess = await getWebinarParticipants(data.access_token);
+      if (!webinarSuccess) {
+        console.error("Error en el registro del webinar. Operación cancelada.");
+        return false;
+      }
+      return true;
+
+    } catch (error) {
+      console.error('Error fetching token:', error);
+    }
+  }
+
+  const getWebinarParticipants = async (token: string) => {
+    const webinarId = zoombWebinar;
+    let nextPageToken = '';
+    let allParticipants: any[] = [];
+
+    try {
+        do {
+            let url = `/api/zoom-webinar-participants?webinarId=${webinarId}&token=${token}`;
+            if (nextPageToken) {
+                url += `&next_page_token=${nextPageToken}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message);
+            }
+
+            const data = await response.json();
+
+            allParticipants = allParticipants.concat(data.participants);
+
+            nextPageToken = data.next_page_token || '';
+
+        } while (nextPageToken);
+
+        console.log('Todos los participantes:', allParticipants);
+        
+    } catch (error) {
+        console.error('Error al obtener de zoom:', error);
+        return false;
+    }
+
+    try {
+      const attendanceData = allParticipants.map(participant => ({
+        email: participant.user_email,
+        totalTime: participant.duration,
+        username: participant.name,
+      }));
+
+      await updateEventGuests(attendanceData as { email: string; totalTime: number; username: string }[]);
+      toast({
+        title: "Éxito",
+        description: "La asistencia de Zoom se ha actualizado correctamente.",
+      });
+    } catch (error) {
+      console.error('Error al procesar asistencia de Zoom:', error);
+      toast({
+        title: "Error",
+        description: "Hubo un problema al procesar la asistencia de Zoom.",
+        variant: "destructive",
+      });
+    }
+
+};
+
+
   return (
     <div className="space-y-4">
       <label
@@ -279,6 +368,10 @@ export function UploadZoomAttendance({ eventId }: { eventId: number }) {
       {file && <p>Archivo seleccionado: {file.name}</p>}
       <Button onClick={handleUpload} disabled={!file || isUploading}>
         {isUploading ? 'Subiendo...' : 'Subir asistencia de Zoom'}
+      </Button>
+      <div></div>
+      <Button onClick={handleZoomSync} disabled={true}>
+        Sincronizar asistencia Zoom
       </Button>
       {orphanedEmails.length > 0 && (
         <div className="mt-4 p-4 border rounded-md bg-yellow-50">
