@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx'
 import { toast } from "@/hooks/use-toast"
 import { userTypes } from '../UserTypeSelector'
 import { membershipTypes } from '../MembershipTypeSelector'
+import ExcelJS from "exceljs"
 
 export function ImportExternals({ listId }: { listId: number }) {
   const [file, setFile] = useState<File | null>(null)
@@ -31,17 +32,40 @@ export function ImportExternals({ listId }: { listId: number }) {
   }
 
   // Función para descargar la plantilla
-  const downloadTemplate = () => {
-    const headers = [
-      ['Empresa', 'Nombre', 'Apellido', 'Correo', 'Cargo', 
-        'Tipo de usuario', 'Tipo de membresia'],
-    ]
+  const downloadTemplate = async () => {
+    const headers = ['Empresa', 'Nombre', 'Apellido', 'Correo', 'Cargo', 
+        'Tipo de usuario', 'Tipo de membresia']
 
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.aoa_to_sheet(headers)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla')
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Plantilla")
+    worksheet.addRow(headers)
 
-    XLSX.writeFile(workbook, 'plantilla_invitados_externos.xlsx')
+    worksheet.getCell('F2').dataValidation = {
+      type: 'list',
+      allowBlank: false,
+      formulae: [`"${userTypes.join(',')}"`]
+    };
+
+    worksheet.getCell('G2').dataValidation = {
+      type: 'list',
+      allowBlank: false,
+      formulae: [`"${membershipTypes.join(',')}"`]
+    };
+
+    worksheet.getCell("F2").dataValidation.error = "Please select a valid user type"
+    worksheet.getCell("G2").dataValidation.error = "Please select a valid membership type"
+
+    for (let i = 3; i <= 100; i++) {
+      worksheet.getCell(`F${i}`).dataValidation = worksheet.getCell("F2").dataValidation
+      worksheet.getCell(`G${i}`).dataValidation = worksheet.getCell("G2").dataValidation
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+    const link = document.createElement("a")
+    link.href = window.URL.createObjectURL(blob)
+    link.download = "plantilla_invitados_externos.xlsx"
+    link.click()  
   }
 
   // Función para cargar el archivo a Supabase
