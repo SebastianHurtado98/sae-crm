@@ -25,6 +25,7 @@ const eventTypeOptions = ['Presencial', 'Virtual', 'Híbrido']
 export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEventId }: EventFormProps) {
   const [name, setName] = useState('')
   const [eventType, setEventType] = useState('')
+  const [zoomWebinar, setZoomWebinar] = useState('')
   const [dateHour, setDateHour] = useState('')
   const [place, setPlace] = useState('')
   const [registerOpen, setRegisterOpen] = useState(false)
@@ -46,6 +47,7 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
     } else if (data) {
       setName(data.name)
       setEventType(data.event_type)
+      setZoomWebinar(data.zoom_webinar)
       setDateHour(data.date_hour)
       setPlace(data.place)
       setRegisterOpen(data.register_open)
@@ -77,6 +79,7 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
     const event = {
       name,
       event_type: eventType,
+      zoom_webinar: zoomWebinar,
       date_hour: dateHour,
       place,
       register_open: registerOpen,
@@ -178,6 +181,17 @@ export function EventForm({ eventId, copyEventId, macroEventId: initialMacroEven
           </SelectContent>
         </Select>
       </div>
+      { eventType && eventType !== "Presencial" && (
+      <div>
+        <Label htmlFor="zoomWebinar">Seminario Zoom</Label>
+        <Input
+          id="zoomWebinar"
+          type="text"
+          value={zoomWebinar}
+          onChange={(e) => setZoomWebinar(e.target.value)}
+        />
+      </div>
+      )}
       <div>
         <Label htmlFor="dateHour">Fecha y hora</Label>
         <Input

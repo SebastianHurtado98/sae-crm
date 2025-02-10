@@ -300,7 +300,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         </TabsContent>
              
         <TabsContent value="subir-asistencia">
-          <UploadZoomAttendance eventId={parseInt(resolvedParams.id)} zoombWebinar={event.zoom_webinar} />
+          <UploadZoomAttendance eventId={parseInt(resolvedParams.id)} zoomWebinar={event.zoom_webinar} />
         </TabsContent>
         
         <TabsContent value="escanear-qr">

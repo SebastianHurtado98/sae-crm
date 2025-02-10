@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Papa from 'papaparse';
 import { toast } from "@/hooks/use-toast";
 
-export function UploadZoomAttendance({ eventId, zoombWebinar }: { eventId: number, zoombWebinar: string }) {
+export function UploadZoomAttendance({ eventId, zoomWebinar }: { eventId: number, zoomWebinar: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [orphanedEmails, setOrphanedEmails] = useState<{email: string, username: string}[]>([]);
@@ -286,7 +286,7 @@ export function UploadZoomAttendance({ eventId, zoombWebinar }: { eventId: numbe
   }
 
   const getWebinarParticipants = async (token: string) => {
-    const webinarId = zoombWebinar;
+    const webinarId = zoomWebinar;
     let nextPageToken = '';
     let allParticipants: any[] = [];
 
