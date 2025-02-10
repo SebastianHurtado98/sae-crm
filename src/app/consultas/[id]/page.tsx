@@ -4,32 +4,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { QueryDetail } from "@/app/consultas/_types/ConsultasTypes"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowLeft, Pencil, Building, User, Users, FileText, Calendar, Briefcase } from 'lucide-react'
 
-type Query = {
-  id: number
-  company_id: number
-  executive_id: number | null
-  other_executive: boolean
-  other_fullname: string | null
-  other_email: string | null
-  assignee: string[]
-  description: string
-  solved_date: string | null
-  company: {
-    razon_social: string
-  }
-  executive: {
-    name: string
-    last_name: string
-    position: string
-  }
-}
+
 
 export default function QueryDetailsPage() {
-  const [query, setQuery] = useState<Query | null>(null)
+  const [query, setQuery] = useState<QueryDetail | null>(null)
   const params = useParams()
 
   const fetchQuery = useCallback(async () => {

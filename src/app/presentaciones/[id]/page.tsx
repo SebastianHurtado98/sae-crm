@@ -4,40 +4,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { PresentationDetail } from '@/app/presentaciones/_types/PresentacionesTypes'
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowLeft, Pencil } from 'lucide-react'
 
-type Presentation = {
-  id: number
-  company_id: number
-  executive_id: number
-  other_executive: boolean
-  other_fullname: string | null
-  other_email: string | null
-  elaboration_assignee: string[]
-  presentation_assignee: string[]
-  order_source: string
-  order_date: string
-  presentation_date_hour: string
-  presentation_type: string
-  modalidad: string
-  comments: string
-  billable: boolean
-  billable_currency: string | null
-  billable_amount: number | null
-  company: {
-    razon_social: string
-  }
-  executive: {
-    name: string
-    last_name: string
-    position: string
-  }
-}
+
 
 export default function PresentationDetailsPage() {
-  const [presentation, setPresentation] = useState<Presentation | null>(null)
+  const [presentation, setPresentation] = useState<PresentationDetail | null>(null)
   const params = useParams()
 
   const fetchPresentation = useCallback(async () => {

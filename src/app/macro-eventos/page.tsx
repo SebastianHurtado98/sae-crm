@@ -3,34 +3,16 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { EventDetail, List, MacroEvent } from "@/app/macro-eventos/_types/MacroEventosTypes"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from 'next/link'
 import { PlusCircle, Pencil, ChevronDown, Trash2, Eye } from 'lucide-react'
 
-type MacroEvent = {
-    id: number
-    name: string
-}
-
-type List = {
-    id: number
-    name: string
-    macro_event_id: number
-}
-type Event = {
-    id: number
-    name: string
-    event_type: string
-    date_hour: string
-    place: string
-    register_open: boolean
-    macro_event_id: number
-}
 
 export default function EventosNuevo() {
     const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([])
-    const [events, setEvents] = useState<Event[]>([])
-    const [filteredEvents, setFilteredEvents] = useState<Event[]>([])
+    const [events, setEvents] = useState<EventDetail[]>([])
+    const [filteredEvents, setFilteredEvents] = useState<EventDetail[]>([])
     const [lists, setLists] = useState<List[]>([])
     const [filteredLists, setFilteredLists] = useState<List[]>([])
     const [expandedMacroEvent, setExpandedMacroEvent] = useState<number | null>(null)

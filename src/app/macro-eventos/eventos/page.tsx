@@ -4,17 +4,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Event } from "@/app/macro-eventos/_types/MacroEventosTypes"
 import Link from 'next/link'
 import { PlusCircle, Eye, Pencil, Trash2, Copy } from 'lucide-react'
 
-type Event = {
-  id: number
-  name: string
-  event_type: string
-  date_hour: string
-  place: string
-  register_open: boolean
-}
 
 export default function EventosPage() {
   const [events, setEvents] = useState<Event[]>([])

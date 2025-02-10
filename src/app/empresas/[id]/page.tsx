@@ -4,54 +4,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { Company, Executive, Assistant, Membership } from "@/app/empresas/_types/EmpresasTypes"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from 'next/link'
 import { Eye, Pencil, Building, UserPlus } from 'lucide-react'
-
-type Company = {
-  id: number
-  ruc: string | null
-  razon_social: string | null
-  nombre_comercial: string | null
-  seats: number | null
-  country: string | null
-  department: string | null
-  address: string | null
-  phone_number: string | null
-  industry: string | null
-  status: string | null
-  enrollment_date: string | null
-  notes: string | null
-  headcount: number | null
-  sales: number | null
-}
-
-type Executive = {
-  id: number
-  dni: string | null
-  name: string | null
-  last_name: string | null
-  membership_id: number | null
-  assistant_id: number | null
-  user_type: string | null
-  email: string | null
-}
-
-type Assistant = {
-  id: number
-  dni: string | null
-  name: string | null
-  last_name: string | null
-  email: string | null
-}
-
-type Membership = {
-  id: number
-  name: string | null
-  membership_type: string | null
-}
 
 export default function CompanyDetailsPage() {
   const [company, setCompany] = useState<Company | null>(null)

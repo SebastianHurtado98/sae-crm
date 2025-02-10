@@ -4,26 +4,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { Assistant } from '@/app/secretarias/_types/SecretariasTypes'
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowLeft, Pencil } from 'lucide-react'
 
-type Assistant = {
-  id: number
-  dni: string
-  name: string
-  last_name: string
-  email: string
-  company_id: number
-  cc_office_phone: string
-  office_phone: string
-  office_phone_extension: string
-  cc_mobile_phone: string
-  mobile_phone: string
-  company: {
-    razon_social: string
-  }
-}
+
 
 export default function AssistantDetailsPage() {
   const [assistant, setAssistant] = useState<Assistant | null>(null)

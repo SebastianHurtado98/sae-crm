@@ -4,25 +4,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Assistant } from "@/app/secretarias/_types/SecretariasTypes";
 import Link from 'next/link'
 import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react'
 
-type Assistant = {
-  id: number
-  dni: string
-  name: string
-  last_name: string
-  email: string
-  company_id: number
-  cc_office_phone: string
-  office_phone: string
-  office_phone_extension: string
-  cc_mobile_phone: string
-  mobile_phone: string
-  company: {
-    razon_social: string
-  }
-}
 
 export default function SecretariasPage() {
   const [assistants, setAssistants] = useState<Assistant[]>([])

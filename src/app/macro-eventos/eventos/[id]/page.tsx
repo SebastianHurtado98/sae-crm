@@ -4,6 +4,7 @@ import { use } from 'react'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { EventDetail } from '@/app/macro-eventos/_types/MacroEventosTypes'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UploadZoomAttendance } from '@/components/UploadZoomAttendance'
 import { EventReportTab } from '@/components/EventReportTab'
@@ -14,19 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CreateEventGuestForm } from '@/components/CreateGuestForm'
 import { GuestTable } from '@/components/macroEvent/EventGuestTable'
 
-type Event = {
-  id: number
-  name: string
-  event_type: string
-  date_hour: string
-  place: string
-  register_open: boolean
-  macro_event_id: number
-}
-
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
-  const [event, setEvent] = useState<Event | null>(null)
+  const [event, setEvent] = useState<EventDetail | null>(null)
   const [hasList, setHasList] = useState<boolean>(false)
   const [eventLists, setEventLists] = useState<{ id: number; name: string }[]>([]);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);

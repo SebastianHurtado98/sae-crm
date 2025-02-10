@@ -4,14 +4,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { List } from "@/app/macro-eventos/_types/MacroEventosTypes"
 import Link from 'next/link'
 import { Eye, PlusCircle} from 'lucide-react'
-
-type List = {
-  id: number
-  name: string
-  macro_event_id: number
-}
 
 export default function EventosPage() {
   const [lists, setLists] = useState<List[]>([])

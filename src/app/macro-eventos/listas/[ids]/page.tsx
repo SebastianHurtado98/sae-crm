@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { List } from "@/app/macro-eventos/_types/MacroEventosTypes"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GuestTable } from '@/components/macroEvent/EventGuestTable'
 import { CreateGuestForm } from '@/components/macroEvent/CreateGuestForm'
@@ -10,11 +11,6 @@ import { ImportUsers } from '@/components/macroEvent/ImportUsers'
 import { ImportExternals } from '@/components/macroEvent/ImportExternals'
 //import * as XLSX from 'xlsx'
 
-type List = {
-  id: number
-  name: string
-  macro_event_id: number
-}
 
 export default function EventDetailPage({ params }: { params: Promise<{ ids: number }> }) {
   const resolvedParams = use(params);

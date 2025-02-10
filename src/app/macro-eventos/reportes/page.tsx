@@ -3,53 +3,16 @@
 import { useState, useMemo, useCallback, useEffect, Suspense } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { EventsReportTable } from "@/components/EventsReportTable"
+import { EventDetail, EventGuest, MacroEvent } from "@/app/macro-eventos/_types/MacroEventosTypes"
 import { StatsCards } from "@/components/StatsCards"
 import { MacroEventReportList } from "@/components/MacroEventReportList"
 import { useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { SearchableSelectFilterGuestCompany } from "@/components/SearchableSelectFilterGuestCompany"
 
-type MacroEvent = {
-  id: number
-  name: string
-}
-
-type Event = {
-  id: number
-  name: string
-  event_type: string
-  date_hour: string
-  place: string
-  register_open: boolean
-  macro_event_id: number
-}
-
-type EventGuest = {
-  id: string
-  event_id: number
-  name: string
-  email: string
-  virtual_session_time: number | null
-  registered: boolean
-  assisted: boolean
-  company_razon_social: string
-  guest?: {
-    name: string
-    email: string
-    is_user: boolean
-    company_razon_social: string
-    company? :{
-      razon_social: string
-    }
-    executive? : {
-      name: string
-      last_name: string
-    }
-  }
-}
 
 
-const calculateStats = (macroEventId: number, events: Event[], eventGuests: EventGuest[]) => {
+const calculateStats = (macroEventId: number, events: EventDetail[], eventGuests: EventGuest[]) => {
   const macroEventEvents = events.filter((event) => event.macro_event_id === macroEventId)
   const macroEventGuests = eventGuests.filter((guest) => macroEventEvents.some((event) => event.id === guest.event_id))
 
@@ -94,7 +57,7 @@ function MacroReporteContent() {
   const initialMacroEventId = searchParams ? searchParams.get("macroEventId") || "" : "";
   const [macroEventId, setMacroEventId] = useState(initialMacroEventId || '')
   const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([])
-  const [events, setEvents] = useState<Event[]>([])
+  const [events, setEvents] = useState<EventDetail[]>([])
   const [eventGuests, setEventGuests] = useState<EventGuest[]>([])
   
   const [searchQuery, setSearchQuery] = useState('')

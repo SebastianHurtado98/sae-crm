@@ -4,30 +4,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Project } from '@/app/proyectos/_types/ProyectosTypes'
 import Link from 'next/link'
 import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react'
-
-type Project = {
-  id: number
-  project_code: string
-  company_id: number
-  executive_id: number
-  other_executive: boolean
-  other_fullname: string | null
-  other_email: string | null
-  assignee: string[]
-  start_date: string
-  end_date: string
-  status: 'Inicial' | 'Intermedio' | 'Avanzado' | 'Finalizado' | 'Propuesta enviada'
-  comments: string
-  company: {
-    razon_social: string
-  }
-  executive: {
-    name: string
-    last_name: string
-  }
-}
 
 export default function ProjectsPage() {
   const [allProjects, setAllProjects] = useState<Project[]>([])

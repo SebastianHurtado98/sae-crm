@@ -4,35 +4,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Presentation } from '@/app/presentaciones/_types/PresentacionesTypes'
 import Link from 'next/link'
 import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react'
-
-type Presentation = {
-  id: number
-  company_id: number
-  executive_id: number
-  other_executive: boolean
-  other_fullname: string | null
-  other_email: string | null
-  elaboration_assignee: string[]
-  presentation_assignee: string[]
-  order_source: string
-  order_date: string
-  presentation_date_hour: string
-  presentation_type: string
-  modalidad: string
-  comments: string
-  billable: boolean
-  billable_currency: string | null
-  billable_amount: number | null
-  company: {
-    razon_social: string
-  }
-  executive: {
-    name: string
-    last_name: string
-  }
-}
 
 export default function PresentationsPage() {
   const [allPresentations, setAllPresentations] = useState<Presentation[]>([])

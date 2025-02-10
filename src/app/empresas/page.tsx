@@ -4,26 +4,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Company } from "@/app/empresas/_types/EmpresasTypes"
 import Link from 'next/link'
 import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react'
-
-type Company = {
-  id: number
-  ruc: string | null
-  razon_social: string | null
-  nombre_comercial: string | null
-  seats: number | null
-  country: string | null
-  department: string | null
-  address: string | null
-  phone_number: string | null
-  industry: string | null
-  status: string | null
-  enrollment_date: string | null
-  notes: string | null
-  headcount: number | null
-  sales: number | null
-}
 
 
 export default function EmpresasPage() {

@@ -4,35 +4,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
+import { ProjectDetails } from '@/app/proyectos/_types/ProyectosTypes'
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowLeft, Pencil } from 'lucide-react'
 
-type Project = {
-  id: number
-  project_code: string
-  company_id: number
-  executive_id: number
-  other_executive: boolean
-  other_fullname: string | null
-  other_email: string | null
-  assignee: string[]
-  start_date: string
-  end_date: string
-  status: string
-  comments: string
-  company: {
-    razon_social: string
-  }
-  executive: {
-    name: string
-    last_name: string
-    position: string
-  }
-}
+
 
 export default function ProjectDetailsPage() {
-  const [project, setProject] = useState<Project | null>(null)
+  const [project, setProject] = useState<ProjectDetails | null>(null)
   const params = useParams()
 
   const fetchProject = useCallback(async () => {
