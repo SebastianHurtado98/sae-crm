@@ -327,7 +327,7 @@ export function UploadZoomAttendance({ eventId, zoomWebinar }: { eventId: number
     try {
       const attendanceData = allParticipants.map(participant => ({
         email: participant.user_email,
-        totalTime: participant.duration,
+        totalTime: Math.round(participant.duration / 60),
         username: participant.name,
       }));
 
