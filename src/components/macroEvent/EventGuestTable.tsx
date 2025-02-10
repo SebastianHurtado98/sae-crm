@@ -16,7 +16,7 @@ import {
 
 import { EditGuestForm } from '@/components/macroEvent/EditGuestForm'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react'
 import QRCode from 'qrcode'
 import JSZip from 'jszip'
 import { EmailConfirmationModal } from '../EmailModal'
@@ -893,12 +893,14 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                       size="sm"
                       onClick={() => setEditingGuestId(guest.id)}
                     >
-                      Editar
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Editar</span>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm">
-                          Borrar
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Borrar</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
