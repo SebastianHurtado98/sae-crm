@@ -13,6 +13,7 @@ import { useSearchParams } from 'next/navigation'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CreateEventGuestForm } from '@/components/CreateGuestForm'
 import { GuestTable } from '@/components/macroEvent/EventGuestTable'
+import { Label } from '@/components/ui/label'
 
 type Event = {
   id: number
@@ -269,24 +270,28 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               }
           </div> 
           :
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="event-list-dropdown" className="block text-sm font-medium text-gray-700">
+          <div className="space-y-6 p-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+            <div className="space-y-2">
+              <Label htmlFor="event-list-dropdown" className="text-lg font-semibold text-gray-800">
                 Selecciona una lista de invitados:
-              </label>
-              <select
-                id="event-list-dropdown"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                value={selectedListId || ''}
-                onChange={(e) => setSelectedListId(Number(e.target.value))}
+              </Label>
+              <Select
+                value={selectedListId ? String(selectedListId) : ''}
+                onValueChange={(value) => setSelectedListId(Number(value))}
               >
-                <option value="" disabled>Selecciona una lista</option>
-                {eventLists.map((list) => (
-                  <option key={list.id} value={list.id}>{list.name}</option>
-                ))}
-              </select>
+                <SelectTrigger id="event-list-dropdown" className="w-full">
+                  <SelectValue placeholder="Selecciona una lista" />
+                </SelectTrigger>
+                <SelectContent>
+                  {eventLists.map((list) => (
+                    <SelectItem key={list.id} value={String(list.id)}>
+                      {list.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Button variant="outline" onClick={handleSelectList}>
+            <Button onClick={handleSelectList}>
               Usar Lista de invitados
             </Button>
           </div> 
