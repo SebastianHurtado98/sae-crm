@@ -172,17 +172,21 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   
       setFilterGuests(filteredGuests)
       
-      let paginatedGuests = filteredGuests
+      let paginatedGuests = filteredGuests.sort((a, b) => {
+        const companyComparison = (a.company || "").localeCompare(b.company || "");
+        if (companyComparison === 0) {
+          return (a.name || "").localeCompare(b.name || "");
+        }        
+        return companyComparison;
+      });
+      
       if (itemsPerPage !== "all") {
-        paginatedGuests = filteredGuests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+        paginatedGuests = paginatedGuests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
         setTotalPages(Math.ceil(filteredGuests.length / itemsPerPage))
       } else {
         setTotalPages(1)
       }
-    const sortedData = paginatedGuests.sort((a, b) => {
-      return (a.company || "").localeCompare(b.company || "");
-    });
-    setVisibleGuests(sortedData);
+    setVisibleGuests(paginatedGuests);
   }, [searchQuery, filterUserType, filterLastEmailSent, filterRegistered, filterAssisted, filterDateFrom, filterDateTo, currentPage, guests, itemsPerPage])
 
   async function fetchGuests() {
