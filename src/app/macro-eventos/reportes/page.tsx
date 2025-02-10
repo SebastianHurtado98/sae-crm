@@ -8,6 +8,7 @@ import { MacroEventReportList } from "@/components/MacroEventReportList"
 import { useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { SearchableSelectFilterGuestCompany } from "@/components/SearchableSelectFilterGuestCompany"
+import { EventTypeReportTable } from "@/components/EventTypeReportTable"
 
 type MacroEvent = {
   id: number
@@ -70,6 +71,7 @@ const calculateStats = (macroEventId: number, events: Event[], eventGuests: Even
     return {
       eventId: event.id,
       eventName: event.name,
+      eventType: event.event_type,
       registrados: eventGuests.filter((guest) => guest.registered).length,
       asistentes: eventGuests.filter((guest) => guest.assisted).length,
     }
@@ -225,6 +227,10 @@ function MacroReporteContent() {
 
           <div className="my-8">
             <EventsReportTable eventStats={stats.eventStats} />
+          </div>
+
+          <div className="my-8">
+            <EventTypeReportTable eventStats={stats.eventStats} />
           </div>
         </>
       )}
