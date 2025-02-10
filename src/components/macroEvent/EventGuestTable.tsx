@@ -428,7 +428,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
     </div>
   )
 
-    const handleQRClick = async (guestId: string | null = null) => {  
+    const handleQRClick = async (guestIds: string[] | null = null) => {  
       let query = supabase
         .from('guest')
         .select(`
@@ -437,8 +437,8 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
           executive:executive_id (id, name, last_name, email, office_phone, position)
         `).eq('list_id', listId)
       
-      if (guestId) {
-        query = query.eq('id', guestId);
+      if (guestIds && guestIds.length > 0) {
+        query = query.in('id', guestIds);
       }
       
       const { data, error } = await query;    
@@ -461,7 +461,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
   
         const guestCompany = guest.is_user 
           ? guest.company?.razon_social || ""
-          : guest.company_razon_social  
+          : guest.company_razon_social || ""  
   
         try {
           
@@ -822,7 +822,11 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
 
         </div>
       </div>
-      <div className="flex ml-auto space-x-2">
+      <Button onClick={() => handleQRClick(selectedGuests)}>
+        Generar {selectedGuests.length} Códigos QR
+      </Button>
+
+      <div className="flex ml-auto space-x-2 mt-4">
         <Button variant="outline" onClick={() => handleExcelClick()}>Descargar Excel</Button>
       </div>
 
@@ -881,7 +885,7 @@ export function GuestTable({ listId, eventId = null }: { listId: number; eventId
                     >
                       🔗
                     </Button>
-                    <Button onClick={() => handleQRClick(guest.id)}>
+                    <Button onClick={() => handleQRClick([guest.id])}>
                       QR
                     </Button>
                     <Button 
