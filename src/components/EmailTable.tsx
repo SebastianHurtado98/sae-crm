@@ -116,7 +116,7 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
       `,
         { count: 'exact' }
       )
-      .eq('list_id', 28)
+      .eq('list_id', 29)
 
     if (error) {
       console.error('Error fetching guests:', error);
@@ -131,7 +131,7 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
         const { data: eventGuestData, error: eventGuestError } = await supabase
           .from('event_guest')
           .select('id, guest_id, assisted, registered')
-          .eq('event_id', 81);
+          .eq('event_id', 86);
 
         if (eventGuestError) {
           console.error('Error fetching event_guest:', eventGuestError);
@@ -329,40 +329,76 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
     
     const selectedGuestsData = [
       {
-          "apodo": "Rafael",
-          "email": "rafael.berckholtz@agrovisioncorp.com",
-          "name": "Rafael Berckholtz",
+          "apodo": "Dennis",
+          "email": "dennis.fernandez@aenza.com.pe",
+          "name": "Dennis Fernandez Armas",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Manuel",
-          "email": "mmontori@gmail.com",
-          "name": "Manuel Montori Alfaro",
+          "apodo": "Mariano",
+          "email": "malvarez@afphabitat.com.pe",
+          "name": "Mariano Álvarez De la Torre Jara",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Luis",
-          "email": "luis.leey@amrop.pe",
-          "name": "Luis Leey Casella",
+          "apodo": "José Luis",
+          "email": "jose.cordano@surainvestments.com",
+          "name": "José Luis Cordano Copello",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Yien Yi",
-          "email": "yyi@apoyoconsultoria.com",
-          "name": "Yien Yi",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Donita",
-          "email": "drodriguez@apoyoconsultoria.com",
-          "name": "Donita Rodríguez",
+          "apodo": "Mayte",
+          "email": "msavaresse@algeciras.com.pe",
+          "name": "Mayte Savaresse  Berrocal",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Miguel",
-          "email": "mfigallo@apoyoconsultoria.com",
-          "name": "Miguel Figallo",
+          "apodo": "Rafael",
+          "email": "rvillanueva@algeciras.com.pe",
+          "name": "Rafael Villanueva Merino",
           "estimado": "Estimado"
+      },
+      {
+          "apodo": "Malena",
+          "email": "mmoralesval@alicorp.com.pe",
+          "name": "Malena Morales Valentín",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Federico",
+          "email": "federico.cuneo@amrop.pe",
+          "name": "Federico Cáneo De la Piedra",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Ana",
+          "email": "ana.chiappori@outlook.com.pe",
+          "name": "Ana Chiappori  Samengo",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Javier",
+          "email": "javier.rivarola@anixter.com",
+          "name": "Javier Rivarola",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Gabriel",
+          "email": "goz@apoyocomunicacion.com",
+          "name": "Gabriel Ortiz de Zevallos",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Milagros",
+          "email": "mavendano@apoyocomunicacion.com",
+          "name": "Milagros Avendaño Rodriguez Larrain",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Claudia",
+          "email": "carata@apoyoconsultoria.com",
+          "name": "Claudia Arata",
+          "estimado": "Estimada"
       },
       {
           "apodo": "Francesca",
@@ -371,21 +407,21 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimada"
       },
       {
-          "apodo": "José Carlos",
-          "email": "jsaavedra@apoyoconsultoria.com",
-          "name": "José Carlos Saavedra",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Mariana",
-          "email": "membresiassae@apoyoconsultoria.com",
-          "name": "Mariana Morante",
+          "apodo": "Giuliana",
+          "email": "gnavarro@apoyoconsultoria.com",
+          "name": "Giuliana Navarro",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Lorena",
-          "email": "lmendez@apoyoconsultoria.com",
-          "name": "Lorena Méndez",
+          "apodo": "Susana",
+          "email": "scama@apoyoconsultoria.com",
+          "name": "Susana Cama",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Alejandra",
+          "email": "averastegui@apoyoconsultoria.com",
+          "name": "Alejandra Verástegui",
           "estimado": "Estimada"
       },
       {
@@ -395,33 +431,33 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado"
       },
       {
-          "apodo": "Fernando",
-          "email": "fernando.garciarosell@ashmoregroup.com.co",
-          "name": "Fernando García-Rosell Chávez",
+          "apodo": "Jaime",
+          "email": "jgrana@aap.org.pe",
+          "name": "Jaime Graña",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Martín",
-          "email": "mnaranjo@asbanc.com.pe",
-          "name": "Martín Antonio Naranjo Landerer",
+          "apodo": "Ider Cifuentes",
+          "email": "ider.cifuentes.m@astara.com",
+          "name": "Ider Cifuentes",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Didier",
+          "email": "dsaplana@austral.com.pe",
+          "name": "Didier Saplana Piquemal",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Eduardo",
-          "email": "emoron@apeseg.org.pe",
-          "name": "Eduardo Moron",
-          "estimado": "Estimado"
+          "apodo": "Adriana",
+          "email": "agiudice@austral.com.pe",
+          "name": "Adriana Giudice Alva",
+          "estimado": "Estimada"
       },
       {
           "apodo": "Claudio",
           "email": "cortizt@gildemeister.pe",
           "name": "Claudio Ortiz Tabusso",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Ivan",
-          "email": "icontreras@gildemeister.pe",
-          "name": "Ivan Contreras",
           "estimado": "Estimado"
       },
       {
@@ -431,112 +467,214 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado"
       },
       {
-          "apodo": "Hugo",
-          "email": "hperea@bbva.com",
-          "name": "Hugo Perea Flores",
+          "apodo": "Julio",
+          "email": "julio.velarde@bcrp.gob.pe",
+          "name": "Julio Velarde  Flores",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Daniel",
-          "email": "daniel.menendez@itau.com.pe",
-          "name": "Daniel Menendez Zeppilli",
+          "apodo": "Paul",
+          "email": "paul.castillo@bcrp.gob.pe",
+          "name": "Paul Castillo",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Renzo",
-          "email": "renzo.ricci@pichincha.pe",
-          "name": "Renzo Ricci",
+          "apodo": "Jose Luis",
+          "email": "jchavez@bcp.com.pe",
+          "name": "Jose Luis Chavez Corzo",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Aron",
-          "email": "akizner@bancom.pe",
-          "name": "Aron Kizner Zamudio",
+          "apodo": "Alejandro",
+          "email": "alejandroperezreyes@credicorpperu.com",
+          "name": "Alejandro Perez Reyes",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Luis",
+          "email": "lcarrera@bcp.com.pe",
+          "name": "Luis Alfonso Carrera Sarmiento",
           "estimado": "Estimado"
       },
       {
           "apodo": "Diego",
-          "email": "diego.barrios@bnpparibas.com",
-          "name": "Diego Barrios Arbulu",
+          "email": "dcavero@bcp.com.pe",
+          "name": "Diego Cavero Belaunde",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Carlos",
-          "email": "cgarciaj@camaralima.org.pe",
-          "name": "Carlos García Jeri",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Guillermo",
-          "email": "gcabrejos@cartaviorumco.pe",
-          "name": "Guillermo Isaac Cabrejos",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Julio",
-          "email": "jgaige@celsa.com.pe",
-          "name": "Julio Gaige",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Claudia",
-          "email": "claudia.ponce@citi.com",
-          "name": "Claudia Ponce",
+          "apodo": "María del Carmen",
+          "email": "mtorres@bcp.com.pe",
+          "name": "María del Carmen Torres  Mariscal",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Adriana",
-          "email": "adriana.valenzuela@citi.com",
-          "name": "Adriana Valenzuela",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Miguel",
-          "email": "miguel.uccelli@citi.com",
-          "name": "Miguel Uccelli",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Karen",
-          "email": "karen.musso@citi.com",
-          "name": "Karen Musso",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Joaquín Ormeño  ",
-          "email": "joaquin.ormeno@citi.com",
-          "name": "Joaquín Ormeño  ",
+          "apodo": "María Eugenia Diaz",
+          "email": "mediaz@bancofalabella.com.pe",
+          "name": "María Eugenia Diaz",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Sergio",
-          "email": "sergio.angeles@cnpc.com.pe",
-          "name": "Sergio Angeles",
+          "apodo": "Tomas",
+          "email": "tomaslt@iadb.org",
+          "name": "Tomas Lopes-Teixeira Bermudez",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Virginia",
-          "email": "gdeamat@niubiz.com.pe",
-          "name": "Virginia De Amat",
-          "estimado": "Estimada"
+          "apodo": "Juan Carlos",
+          "email": "jorrego@banbif.com.pe",
+          "name": "Juan Carlos Orrego Gonzales",
+          "estimado": "Estimado"
       },
       {
-          "apodo": "Wuilian Deza",
-          "email": "wuilian.deza@conelsur.com",
-          "name": "Wuilian Deza",
+          "apodo": "Tanja Goodwin",
+          "email": "tgoodwin@worldbank.org",
+          "name": "Tanja Goodwin",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Tulio",
-          "email": "tsilgado@acerosarequipa.com",
-          "name": "Tulio Silgado Consiglieri",
+          "apodo": "Luis",
+          "email": "luishoracio.rodriguez@pichincha.pe",
+          "name": "Luis Horacio Rodriguez",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Mariella",
-          "email": "mariella.paredes@accorporativo.pe",
-          "name": "Mariella Karina Paredes Demarini",
+          "apodo": "Javier",
+          "email": "jsalazar@besco.com.pe",
+          "name": "Javier Salazar Flores",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Francisco",
+          "email": "fmolina2@ford.com",
+          "name": "Francisco Molina Pico",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Luis",
+          "email": "lseminario@bsf.pe",
+          "name": "Luis Seminario",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "José Antonio",
+          "email": "jose.blancocaceres@btgpactual.com",
+          "name": "José Antonio Blanco Cáceres",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Gustavo",
+          "email": "gustavo.yabar@bcw-global.com",
+          "name": "Gustavo Yábar Varas",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Wilber",
+          "email": "wdongo@cajaarequipa.pe",
+          "name": "Wilber Dongo Diaz",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "David",
+          "email": "dise@cmacica.com.pe",
+          "name": "David Sanguineti",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Aldo",
+          "email": "adefilippi@amcham.org.pe",
+          "name": "Aldo Defilippi",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Marcelo",
+          "email": "marcelo_castedo@cargill.com",
+          "name": "Marcelo Castedo",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Luis",
+          "email": "lbenavides@cartaviorumco.pe",
+          "name": "Luis Benavides González del Riego",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Santiago",
+          "email": "santiago.reyna@carvimsa.com",
+          "name": "Santiago Reyna Ciccia",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Alfredo",
+          "email": "alfredo.mastrokalos@cencosud.com.pe",
+          "name": "Alfredo Mastrokalos Viñas",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Patricio",
+          "email": "patricio.malone@citi.com",
+          "name": "Patricio Malone",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Pilar Loaiza",
+          "email": "pilar.loaiza@citi.com",
+          "name": "Pilar Loaiza",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Sandra",
+          "email": "sangarcia@coca-cola.com",
+          "name": "Sandra García",
           "estimado": "Estimada"
+      },
+      {
+          "apodo": "César",
+          "email": "cliendo@antamina.com",
+          "name": "César Liendo",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Patricia Teullet",
+          "email": "patriciateullet@yahoo.com",
+          "name": "Patricia Teullet",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Corina",
+          "email": "csegundo@confiteca.com.pe",
+          "name": "Corina Segundo",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Cecilia Zevallos",
+          "email": "czevallos@breca.com",
+          "name": "Cecilia Zevallos",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Jack",
+          "email": "jfalkon@cipsa.com.pe",
+          "name": "Jack Falcón",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Elia King de Jordán",
+          "email": "elia.king.jordan@gmail.com",
+          "name": "Elia King de Jordán",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Cecilia Blume",
+          "email": "ceciliablume@gmail.com",
+          "name": "Cecilia Blume",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Sandro Borda",
+          "email": "sborda@carvajal.com",
+          "name": "Sandro Borda",
+          "estimado": "Estimado(a)"
       },
       {
           "apodo": "Eleonora Silva Pardo",
@@ -545,160 +683,256 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Aldo",
-          "email": "aldo.reggiardo@cuatrecasas.com",
-          "name": "Aldo Reggiardo Denegri",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Blanca",
-          "email": "blanca.arrieta@diageo.com",
-          "name": "Blanca Arrieta",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Esteban",
-          "email": "esteban.vargas@dinet.com.pe",
-          "name": "Esteban Vargas",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Sergio",
-          "email": "sbarboza@dlapiper.pe",
-          "name": "Sergio Barboza",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Eduardo",
-          "email": "epolo1967@gmail.com",
-          "name": "Eduardo Polo Parada",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Anddy",
-          "email": "arodriguez@electroperu.com.pe",
-          "name": "Anddy Rodríguez Luna",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Victor Pereda",
-          "email": "victor.pereda@esparq.com",
-          "name": "Victor Pereda",
+          "apodo": "David Lemor",
+          "email": "dlemor@pobox.com",
+          "name": "David Lemor",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Fernando",
-          "email": "fernando.nunez@pe.ey.com",
-          "name": "Fernando Nuñez",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Alfredo",
-          "email": "asillau@farosafi.com",
-          "name": "Alfredo Sillau Véldez",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Rolando",
-          "email": "rlunavictoria@farosafi.com",
-          "name": "Rolando Luna Victoria Contreras",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Ronald",
-          "email": "ronald.orrego@ferreycorp.com.pe",
-          "name": "Ronald Orrego",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Angelica",
-          "email": "angelica.paiva@ferreyros.com.pe",
-          "name": "Angelica Paiva Zegarra",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Mariela",
-          "email": "mariela.garcia@ferreycorp.com.pe",
-          "name": "Mariela García de Fabbri",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Mirella",
-          "email": "mirella.denegri@iff.com",
-          "name": "Mirella Denegri Aguirre",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Maricarmen Fedalto Bernal",
-          "email": "mfedalto@hotmail.com",
-          "name": "Maricarmen Fedalto Bernal",
+          "apodo": "Jorge Estrella",
+          "email": "jorge.estrella.viladegut@gmail.com",
+          "name": "Jorge Estrella",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Martin",
-          "email": "mhurtado@grupopatio.com",
-          "name": "Martin Hurtado",
+          "apodo": "Daniel",
+          "email": "dhernandezt@alicorp.com.pe",
+          "name": "Daniel Hernández",
           "estimado": "Estimado"
+      },
+      {
+          "apodo": "Jaime Araoz",
+          "email": "jaimearaozm@gmail.com",
+          "name": "Jaime Araoz",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Juan Carlos Tafur",
+          "email": "tafur_rivera@hotmail.com",
+          "name": "Juan Carlos Tafur",
+          "estimado": "Estimado(a)"
       },
       {
           "apodo": "Rodrigo",
-          "email": "rmontes@insur.com.pe",
-          "name": "Rodrigo Montes",
+          "email": "rmejia@qroma.com.pe",
+          "name": "Rodrigo Mejía Miranda",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Ricardo Ballon",
-          "email": "ricardo.ballon@integraretail.pe",
-          "name": "Ricardo Ballon",
+          "apodo": "Javier",
+          "email": "jvasquezmejia@qroma.com.pe",
+          "name": "Javier Vasquez-Mejia Sander",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Margarita Zavala",
+          "email": "margaritazavala@viccts.com",
+          "name": "Margarita Zavala",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Augusto",
-          "email": "arodriguez@inteligogroup.com",
-          "name": "Augusto Rodríguez Alcocer",
+          "apodo": "Víctor",
+          "email": "vzunigaflores@hotmail.com",
+          "name": "Víctor Zúñiga Flores",
           "estimado": "Estimado"
       },
       {
-          "apodo": "David Almora Bringas",
-          "email": "dalmora@intercorp.com.pe",
-          "name": "David Almora Bringas",
+          "apodo": "Jorge",
+          "email": "jorge.ramirez@ca-cib.com",
+          "name": "Jorge Ramirez Alegre",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Manuel Larrain",
+          "email": "manuel.larrain@ca-cib.com",
+          "name": "Manuel Larrain",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Eduardo",
-          "email": "eherrerav@centenario.com.pe",
-          "name": "Eduardo Herrera",
+          "apodo": "Jorge",
+          "email": "jghiglino@crosland.com.pe",
+          "name": "Jorge Ghiglino Echegaray",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Katherina",
-          "email": "katherina.gamarra@konecta-group.com",
-          "name": "Katherina Gamarra",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Violeta",
-          "email": "vorozco@konecta-group.com",
-          "name": "Violeta Orozco",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Pilar",
-          "email": "pvizcarra@lima-airport.com",
-          "name": "Pilar Vizcarra  Albarracin",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Germán",
-          "email": "german.ortiz@lindcorp.pe",
-          "name": "Germán Ortiz Espinosa",
+          "apodo": "Willard",
+          "email": "wmanrique@crosland.com.pe",
+          "name": "Willard Martín Manrique Ramos",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Ernesto",
-          "email": "efernandini@losportales.com.pe",
-          "name": "Ernesto Fernandini Raffo",
+          "apodo": "Daniela",
+          "email": "dcamacho@dlapiper.pe",
+          "name": "Daniela Camacho",
           "estimado": "Estimado"
+      },
+      {
+          "apodo": "Alvaro",
+          "email": "alvaro.roncal@edelman.com",
+          "name": "Alvaro Roncal",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Mariano Orihuela",
+          "email": "mariano@gastonacurio.pe",
+          "name": "Mariano Orihuela",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "César",
+          "email": "cesar.vargas@bata.com",
+          "name": "César Vargas",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Luis",
+          "email": "luis.torrealba@entel.pe",
+          "name": "Luis Teobaldo Torrealba Fuentes",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Enrique",
+          "email": "enrique.oliveros@pe.ey.com",
+          "name": "Enrique Oliveros Meza",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Jean Paul",
+          "email": "jpchabaneix@estudiorodrigo.com",
+          "name": "Jean Paul Chabaneix  Cunza",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Edgar",
+          "email": "econtreras@fenix.com.pe",
+          "name": "Edgar Contreras  Julcapoma",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Martin",
+          "email": "martin.robles@pe.g4s.com",
+          "name": "Martin Robles",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Jorge",
+          "email": "jruiz@edifica.com.pe",
+          "name": "Jorge Ruiz  Ortiz",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Rafael",
+          "email": "rafael.carranza.cw@carlyle.com",
+          "name": "Rafael Eduardo Carranza Fano",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Martín",
+          "email": "mperezm@gromero.com.pe",
+          "name": "Martín Pérez Monteverde",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Rafaela",
+          "email": "rlabartheu@gromero.com.pe",
+          "name": "Rafaela Rosario Labarthe Uranga",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Paola",
+          "email": "pmoreano@contacto.com.pe",
+          "name": "Paola Moreano",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Roberto",
+          "email": "roberto.delgado@inchcape.cl",
+          "name": "Roberto Delgado",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Omar",
+          "email": "ootiniano@basa.com.pe",
+          "name": "Omar Otiniano Andía",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Oswaldo",
+          "email": "osandoval@sandoval.com.pe",
+          "name": "Oswaldo Sandoval Aguirre",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Alejandro",
+          "email": "asandoval@sandoval.com.pe",
+          "name": "Alejandro Sandoval  Zavala",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Edgardo",
+          "email": "ecarbonel@iksa.com.pe",
+          "name": "Edgardo Carbonel Cavero",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Alberto",
+          "email": "ahuasasquichem@intercorp.com.pe",
+          "name": "Alberto Huasasquiche",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Otilia",
+          "email": "olongaray@intercorp.com.pe",
+          "name": "Otilia Longaray",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Jana",
+          "email": "jana.drakic@glencore.com.pe",
+          "name": "Jana Drakic Mendoza",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Juan Carlos",
+          "email": "juan.arribas@jpmorgan.com",
+          "name": "Juan Carlos Arribas",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Javier",
+          "email": "javier.rehder@gmail.com",
+          "name": "Javier Rehder Castro",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Angie",
+          "email": "angie.f.manrique@kcc.com",
+          "name": "Angie Manrique",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Julio",
+          "email": "julio.molina@kmmp.com.pe",
+          "name": "Julio Armando Molina Salgado",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Tetsujiro",
+          "email": "tetsujiro.ishiguro@kmmp.com.pe",
+          "name": "Tetsujiro Ishiguro",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Mario",
+          "email": "mario.fiocco@laive.pe",
+          "name": "Mario Fiocco Cornejo",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Milagros",
+          "email": "mparedes@lima-airport.com",
+          "name": "Milagros Paredes",
+          "estimado": "Estimada"
       },
       {
           "apodo": "Teppei",
@@ -707,51 +941,135 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado"
       },
       {
-          "apodo": "Jorge Luis Solari",
-          "email": "jorge.solari@marsh.com",
-          "name": "Jorge Luis Solari",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Mario Rodriguez",
-          "email": "mario.rodriguez@microsoft.com",
-          "name": "Mario Rodriguez",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Ines Fernandini",
-          "email": "ifernandini@notariafernandini.com",
-          "name": "Ines Fernandini",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Shirley",
-          "email": "spando@onp.gob.pe",
-          "name": "Shirley Margaret Pando Beltran",
+          "apodo": "Lizette",
+          "email": "lizette.chamochumbi@marsh.com",
+          "name": "Lizette Chamochumbi Macchiavello",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Antonio",
-          "email": "amiranda@omnicommediagroup.com.pe",
-          "name": "Antonio Miranda Payet",
+          "apodo": "Erika",
+          "email": "erika.ramos@wavin.com",
+          "name": "Erika Ramos",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Carlos",
+          "email": "carlos.sotelo.r@mibanco.com.pe",
+          "name": "Carlos Sotelo",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Rolando",
-          "email": "rolando@toledo.pe",
-          "name": "Rolando Toledo Vega",
+          "apodo": "Mónica",
+          "email": "mcalderon@marsa.com.pe",
+          "name": "Mónica Calderón",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Maria Paula",
+          "email": "mvargasro@mef.gob.pe",
+          "name": "Maria Paula Vargas Romero",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Ricardo Najarro",
+          "email": "rnajarro@mef.gob.pe",
+          "name": "Ricardo Najarro",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Edgard",
+          "email": "edgard.ortiz@minsur.com",
+          "name": "Edgard Eduardo Ortiz Galvez",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Dante",
-          "email": "dante.blotte@repsol.com",
-          "name": "Dante Blotte Volpe",
+          "apodo": "Alfonso CAillaux Caillaux",
+          "email": "acaillaux@myhomeoi.com",
+          "name": "Alfonso CAillaux Caillaux",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Guillermo Ferreyros",
+          "email": "guillermo.ferreyros@oigperu.com",
+          "name": "Guillermo Ferreyros",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Milagros",
+          "email": "mjimenezo@openplaza.com.pe",
+          "name": "Milagros Jimenez Olivet",
+          "estimado": "Estimada"
+      },
+      {
+          "apodo": "Vanessa Chávarry Mesa",
+          "email": "vcm@prcp.com.pe",
+          "name": "Vanessa Chávarry Mesa",
+          "estimado": "Estimado(a)"
+      },
+      {
+          "apodo": "Gustavo",
+          "email": "gdelgadoa@diamante.com.pe",
+          "name": "Gustavo Delgado Aparicio",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Abel",
-          "email": "uno@repsa.com.pe",
-          "name": "Abel Carriquiry  Blondet",
+          "apodo": "Walter",
+          "email": "wmartinez@hayduk.com.pe",
+          "name": "Walter Martínez Moreno",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Germán",
+          "email": "geralvarez@pluspetrol.net",
+          "name": "Germán Alvarez",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Juan Pablo",
+          "email": "jpnoziglia@prima.com.pe",
+          "name": "Juan Pablo Noziglia",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Rubén",
+          "email": "rloaiza@prima.com.pe",
+          "name": "Rubén Loaiza  Negreiros",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Francisco",
+          "email": "francisco.alvarez@puratos.com",
+          "name": "Francisco Alvarez Calderon Velarde",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Ramiro",
+          "email": "rastete@omnicommediagroup.com.pe",
+          "name": "Ramiro Astete",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Paolo",
+          "email": "psacchi@ransa.net",
+          "name": "Paolo Sacchi Giurato",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Hozkel",
+          "email": "hvurnbr@pisopak.com",
+          "name": "Hozkel Vurnbrand Sternberg",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Alberto",
+          "email": "alberto.rebaza@rebaza-alcazar.com",
+          "name": "Alberto Rebaza  Torres",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Carlos",
+          "email": "carlos.kergariou@redinter.company",
+          "name": "Carlos René De Kergariou Cordon",
           "estimado": "Estimado"
       },
       {
@@ -761,63 +1079,39 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Alejandro Nuñez Oporto",
-          "email": "alejandro.nunez@rimac.com.pe",
-          "name": "Alejandro Nuñez Oporto",
+          "apodo": "Javier Gamboa",
+          "email": "javier.gamboa@rimac.com.pe",
+          "name": "Javier Gamboa",
           "estimado": "Estimado(a)"
       },
       {
-          "apodo": "Carlos",
-          "email": "cpalomino@sentrix.com.pe",
-          "name": "Carlos Palomino",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Tulio",
-          "email": "tuliovillavicenciob@gmail.com",
-          "name": "Tulio Villavicencio",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Jaime",
-          "email": "jaime@shift.pe",
-          "name": "Jaime Sotomayor",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Ernesto",
-          "email": "ernesto.balarezo@sierrametals.com",
-          "name": "Ernesto Balarezo",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Jean Pierre",
-          "email": "jeanpierre.fort@sierrametals.com",
-          "name": "Jean Pierre Fort",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Miluska",
-          "email": "mcervant@fmi.com",
-          "name": "Miluska Cervantes Cornejo",
+          "apodo": "Sara",
+          "email": "sleonprado@sanmartinperu.pe",
+          "name": "Sara León Prado Aladzeme",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Angela",
-          "email": "agrossheim@snmpe.org.pe",
-          "name": "Angela Grossheim Barrientos",
-          "estimado": "Estimada"
-      },
-      {
-          "apodo": "Oscar",
-          "email": "oscar.soto@esab.com.pe",
-          "name": "Oscar Soto",
+          "apodo": "Edmund",
+          "email": "edmund.egg@skrental.com",
+          "name": "Edmund Egg Noche",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Mario",
-          "email": "mario.matuk@solgas.com.pe",
-          "name": "Mario Matuk",
+          "apodo": "Jose Raul",
+          "email": "joseraul.vargas@skyairline.com",
+          "name": "Jose Raul Vargas Felmuth",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Pablo",
+          "email": "palcazar@fmi.com",
+          "name": "Pablo Alcázar",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Luis",
+          "email": "ldelcarpio@softys.com",
+          "name": "Luis Javier Del Carpio Polar",
           "estimado": "Estimado"
       },
       {
@@ -827,76 +1121,112 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
           "estimado": "Estimado"
       },
       {
-          "apodo": "Adolfo",
-          "email": "adolfo.vera@spm.pe",
-          "name": "Adolfo Vera Fernández",
-          "estimado": "Estimado"
-      },
-      {
-          "apodo": "Nuria",
-          "email": "nesparchf@southernperu.com.pe",
-          "name": "Nuria Esparch",
+          "apodo": "Carolina",
+          "email": "cgonzalez@morada.pe",
+          "name": "Carolina Gonzalez Castellan",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Freddy Mantilla",
-          "email": "Freddy.Mantilla@statkraft.com",
-          "name": "Freddy Mantilla",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Jorge",
-          "email": "jmogrovejo@sbs.gob.pe",
-          "name": "Jorge Dâmaso Mogrovejo Gonzalez",
+          "apodo": "Raúl",
+          "email": "rjacob@southernperu.com.pe",
+          "name": "Raúl Jacob  Ruisanchez",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Juan Manuel Gesto ",
-          "email": "juanmanuel.gesto@telefonica.com",
-          "name": "Juan Manuel Gesto ",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Renzo",
-          "email": "rzamudio@tupemesa.com.pe",
-          "name": "Renzo Zamudio",
+          "apodo": "Hector",
+          "email": "hector.martinez@southlightcapital.com",
+          "name": "Hector Martinez",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Julia",
-          "email": "julia.sobrevilla@unacem.com",
-          "name": "Julia Sobrevilla",
+          "apodo": "Manuel",
+          "email": "mluy@sbs.gob.pe",
+          "name": "Manuel Luy",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Oscar",
+          "email": "obasso@sbs.gob.pe",
+          "name": "Oscar Basso",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Juan",
+          "email": "jgarcia@tecsup.edu.pe",
+          "name": "Juan Manuel García Calderón Barreda",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Silvana",
+          "email": "smartel@toyotaperu.com.pe",
+          "name": "Silvana Martel Espino",
           "estimado": "Estimada"
       },
       {
-          "apodo": "Pedro",
-          "email": "pgrados@ulima.edu.pe",
-          "name": "Luis Grados Smith",
+          "apodo": "Andrés",
+          "email": "amendizabal@tgp.com.pe",
+          "name": "Andrés Mendizabal",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Diego Alonso Noreña Chávez",
-          "email": "dnorena@ulima.edu.pe",
-          "name": "Diego Alonso Noreña Chávez",
-          "estimado": "Estimado(a)"
-      },
-      {
-          "apodo": "Mayu",
-          "email": "mayuhume@gmail.com",
-          "name": "Mayu Hume",
-          "estimado": "Estimada"
+          "apodo": "Tomás",
+          "email": "tdelgado@tgp.com.pe",
+          "name": "Tomás Delgado Farizo",
+          "estimado": "Estimado"
       },
       {
           "apodo": "Álvaro",
-          "email": "aquijandria@gmail.com",
-          "name": "Alvaro Quijandría",
+          "email": "alvaro.morales@unacem.com",
+          "name": "Álvaro Morales Puppo",
           "estimado": "Estimado"
       },
       {
-          "apodo": "Augusto",
-          "email": "alvarezrodrich@gmail.com",
-          "name": "Augusto Álvarez Rodrich",
+          "apodo": "Iro",
+          "email": "iro.petris@unispan.com.pe",
+          "name": "Iro Carlo Petris Chiozza",
           "estimado": "Estimado"
+      },
+      {
+          "apodo": "Raúl",
+          "email": "raul.diaz@limaexpresa.pe",
+          "name": "Raúl Diaz",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Gilberto",
+          "email": "gilberto.chaparro@visa.com",
+          "name": "Gilberto Chaparro",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Oscar",
+          "email": "oespibe1980@gmail.com",
+          "name": "Oscar Espinosa",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Julio",
+          "email": "julio.malo@me.com",
+          "name": "Julio Malo  Vasconez",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Javier",
+          "email": "javier.tovar@bakermckenzie.com",
+          "name": "Javier Tovar",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Carlos",
+          "email": "cheeren@utec.edu.pe",
+          "name": "Carlos Heeren",
+          "estimado": "Estimado"
+      },
+      {
+          "apodo": "Evelyn",
+          "email": "evebarclay@gmail.com",
+          "name": "Evelyn Barclay",
+          "estimado": "Estimada"
       }
   ]
       
@@ -911,7 +1241,7 @@ export function EmailTable({}: { listId: number; eventId?: number | null }) {
 
 
       const emailData = {
-        template_id: "d-ce61501e4de64cc2911c89fb999d2e22",
+        template_id: "d-2b5d80de6cf847ea945b82051aed2523",
         personalizations: batchGuests.map((guest) => ({
           to: guest.email,
           bcc: "contactasae@apoyoconsultoria.com",

@@ -5,6 +5,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY as string)
 
 type Personalization = {
   to: string
+  bcc: string
   dynamicTemplateData: {
     first_name: string
     register_link: string
@@ -26,6 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const msg: sgMail.MailDataRequired = {
         personalizations: personalizations.map((p) => ({
           to: [{ email: p.to }],
+          bcc: [{ email: p.bcc }],
           dynamicTemplateData: p.dynamicTemplateData,
         })),
         from: {
